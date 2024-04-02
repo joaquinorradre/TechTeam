@@ -1,0 +1,173 @@
+{
+	"info": {
+		"_postman_id": "1204feac-0e80-406b-83cc-845c4e691769",
+		"name": "TestsLaravel",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32684564"
+	},
+	"item": [
+		{
+			"name": "GetUsers",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"La respuesta es un objeto JSON válido\", function () {",
+							"    pm.response.to.be.json;",
+							"});",
+							"pm.test(\"Verificar estructura de la respuesta y tipos de datos\", function () {",
+							"    var jsonResponse = pm.response.json();",
+							"    pm.expect(jsonResponse).to.have.property('data').that.is.an('array');",
+							"    pm.expect(jsonResponse.data[0].id, \"ID es una cadena\").to.be.a('string');",
+							"    pm.expect(jsonResponse.data[0].login, \"LOGIN es una cadena\").to.be.a('string');",
+							"    pm.expect(jsonResponse.data[0].display_name, \"Display Name es una cadena\").to.be.a('string');",
+							"    pm.expect(jsonResponse.data[0].type, \"Type es una cadena\").to.be.a('string');",
+							"    pm.expect(jsonResponse.data[0].broadcaster_type, \"Broadcaster Type es una cadena\").to.be.a('string');",
+							"    pm.expect(jsonResponse.data[0].description, \"Description es una cadena\").to.be.a('string');",
+							"    pm.expect(jsonResponse.data[0].profile_image_url, \"Profile es una cadena\").to.be.a('string');",
+							"    pm.expect(jsonResponse.data[0].offline_image_url, \"Offline es una cadena\").to.be.a('string');",
+							"    pm.expect(jsonResponse.data[0].view_count, \"View Count es un número\").to.be.a('number');",
+							"    pm.expect(jsonResponse.data[0].created_at, \"Created At es una cadena\").to.be.a('string');",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost/analytics/users?id=1234",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"analytics",
+						"users"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1234"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetStreams",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"La respuesta es un objeto JSON válido\", function () {",
+							"    pm.response.to.be.json;",
+							"});",
+							"pm.test(\"Verificar que la respuesta es un array\", function () {",
+							"    var jsonResponse = pm.response.json();",
+							"    pm.expect(jsonResponse).to.be.an('array');",
+							"});",
+							"pm.test(\"Verificar cada objeto en el array para las propiedades 'title' y 'user_name'\", function () {",
+							"    var jsonResponse = pm.response.json();",
+							"    jsonResponse.forEach(function(item,index){",
+							"        pm.expect(item,'Item en indice ${index} es u objeto').to.be.an('object');",
+							"        pm.expect(item.title,\"Item en indice ${index} tiene 'title'\").to.be.a('string');",
+							"        pm.expect(item.user_name,\"Itlem en indice ${index} tiene 'user_name'\").to.be.a('string');",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost/analytics/streams",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"analytics",
+						"streams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetTopsOfTheTops",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"La respuesta es un objeto JSON válido\", function () {",
+							"    pm.response.to.be.json;",
+							"});",
+							"pm.test(\"Verificar que la respuesta contiene 3 juegos\", function () {",
+							"    var jsonResponse = pm.response.json();",
+							"    pm.expect(jsonResponse).to.be.an('array');",
+							"    pm.expect(jsonResponse).to.have.lengthOf(3);",
+							"});",
+							"pm.test(\"Verificar tipos de datos\", function () {",
+							"    var jsonResponse = pm.response.json();",
+							"    jsonResponse.forEach(function(item, index) {",
+							"        pm.expect(item).to.be.an('object');",
+							"        pm.expect(item).to.have.property('game_id').that.is.a('string');",
+							"        pm.expect(item).to.have.property('game_name').that.is.a('string');",
+							"        pm.expect(item).to.have.property('user_name').that.is.a('string');",
+							"        pm.expect(item).to.have.property('total_videos').that.is.a('string');",
+							"        pm.expect(item).to.have.property('total_views').that.is.a('string');",
+							"        pm.expect(item).to.have.property('most_viewed_title').that.is.a('string');",
+							"        pm.expect(item).to.have.property('most_viewed_views').that.is.a('string');",
+							"        pm.expect(item).to.have.property('most_viewed_duration').that.is.a('string');",
+							"        pm.expect(item).to.have.property('most_viewed_created_at').that.is.a('string');",
+							"    });",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost/analytics/topsofthetops",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"analytics",
+						"topsofthetops"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

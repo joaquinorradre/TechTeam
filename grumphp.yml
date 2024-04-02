@@ -20,6 +20,6 @@ grumphp:
             whitelist_patterns:
                 - '/^app\/Http\/Controllers\/(.*)$/'
         phpmd:
-            ruleset: [naming]
+            ruleset: [cleancode,codesize,naming]
             whitelist_patterns:
                 - '/^app\/Http\/Controllers\/(.*)$/'
