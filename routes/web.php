@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\getStreams;
 use App\Http\Controllers\getUsers;
-use App\Http\Controllers\getTopOftheTops;
+use App\Http\Controllers\GetTopOfTheTops;
 use Illuminate\Support\Facades\Route;
 
 
