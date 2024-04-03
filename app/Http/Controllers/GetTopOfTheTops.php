@@ -2,155 +2,70 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use App\Utils\Methods;
-use DateTime;
+use Illuminate\Support\Facades\DB;
 
 class GetTopOfTheTops extends Controller
 {
-    protected $methods;
-    protected $database;
+    protected $ddb;
 
-    public function __construct(Methods $methods, DB $database)
+    public function __construct(DB $ddb)
     {
-        $this->methods = $methods;
-        $this->database = $database;
+        $this->db = $ddb;
     }
 
-    public function fetchData(Request $request)
+    public function fetchData(Request $request, Methods $methods)
     {
-        $games = $this->fetchGames();
-        $gameCount = count($games);
-        $gamesTwitchUrl = 'https://api.twitch.tv/helix/games/top?first=3';
         $clientId = 'szp2ugo2j6edjt8ytdak5n2n3hjkq3';
         $clientSecret = '07gk0kbwwzpuw2uqdzy1bjnsz9k32k';
-        $accessToken = $this->methods->requestAccessToken($clientId, $clientSecret);
+        $accessToken = $methods->requestAccessToken($clientId, $clientSecret);
 
-        if ($gameCount == 0 && isset($accessToken)) {
-            $this->updateGamesData($gamesTwitchUrl, $clientId, $accessToken);
-        } elseif ($gameCount > 0 && isset($accessToken)) {
-            $this->updateExistingGamesData($gamesTwitchUrl, $clientId, $accessToken, $request);
-        }
-    }
-
-    private function fetchGames()
-    {
-        return $this->database::table('Game')->get();
-    }
-
-    private function updateGamesData($gamesTwitchUrl, $clientId, $accessToken)
-    {
-        $gamesResponse = $this->methods->fetchTwitchData($gamesTwitchUrl, $clientId, $accessToken);
-        if ($gamesResponse) {
-            $this->methods->insertGames($gamesResponse);
-            $this->methods->fetchAndInsertVideos($gamesResponse, $clientId, $accessToken);
-            $results = $this->getGameData();
-            $this->respondWithData($results);
-        }
-    }
-
-    private function updateExistingGamesData($gamesTwitchUrl, $clientId, $accessToken, $request)
-    {
-        $gamesResponse = $this->methods->fetchTwitchData($gamesTwitchUrl, $clientId, $accessToken);
-        if (isset($gamesResponse['data'])) {
-            $this->updateGames($gamesResponse);
-            $this->deleteObsoleteGames($gamesResponse);
-            $this->updateVideos($gamesResponse, $clientId, $accessToken);
-            $results = $this->getGameData();
-            $this->respondWithData($results);
-        }
-    }
-
-    private function updateGames($gamesResponse)
-    {
-        $games = array_slice($gamesResponse['data'], 0, 3);
-        $existingGameIds = $this->database::table('Game')->pluck('game_id')->toArray();
-        $newGameIds = array_map(function ($game) {
-            return $game['id'];
-        }, $games);
-
-        foreach ($existingGameIds as $existingId) {
-            if (!in_array($existingId, $newGameIds)) {
-                $this->database::table('Video')->where('game_id', $existingId)->delete();
-                $this->database::table('Game')->where('game_id', $existingId)->delete();
-            }
+        if (!$accessToken) {
+            return response()->json(["error" => "Failed to obtain access token"], 500);
         }
 
-        foreach ($games as $game) {
-            $existingGame = $this->database::table('Game')->where('game_id', $game['id'])->first();
-            if (!$existingGame) {
-                $this->database::table('Game')->insert([
-                    'game_id' => $game['id'],
-                    'game_name' => $game['name'],
-                    'last_update' => now()
-                ]);
-            }
+        $gamesTwitchUrl = 'https://api.twitch.tv/helix/games/top?first=3';
+        $gamesResponse = $methods->fetchTwitchData($gamesTwitchUrl, $clientId, $accessToken);
+
+        if (!$gamesResponse || !isset($gamesResponse['data'])) {
+            return response()->json(["error" => "Failed to fetch games data"], 500);
         }
-    }
 
-    private function deleteObsoleteGames($gamesResponse)
-    {
-        $games = array_slice($gamesResponse['data'], 0, 3);
-        $existingGameIds = $this->database::table('Game')->pluck('game_id')->toArray();
-        $newGameIds = array_map(function ($game) {
-            return $game['id'];
-        }, $games);
+        // Obtener IDs de los 3 juegos más vistos
+        $topGameIds = collect($gamesResponse['data'])->pluck('id')->toArray();
 
-        foreach ($existingGameIds as $existingId) {
-            if (!in_array($existingId, $newGameIds)) {
-                $this->database::table('Video')->where('game_id', $existingId)->delete();
-                $this->database::table('Game')->where('game_id', $existingId)->delete();
-            }
-        }
-    }
-
-    private function updateVideos($gamesResponse, $clientId, $accessToken)
-    {
-        $games = array_slice($gamesResponse['data'], 0, 3);
-        foreach ($games as $game) {
-            $videosUrl = "https://api.twitch.tv/helix/videos?game_id={$game['id']}&sort=views&first=40";
-            $videosResponse = $this->methods->fetchTwitchData($videosUrl, $clientId, $accessToken);
-            $this->methods->insertVideos($videosResponse, $game['id']);
-        }
-    }
-
-    private function getGameData()
-    {
-        return $this->database::table('Video as v')
+        $results = $this->db::table('Video as v')
             ->select(
                 'v.game_id',
                 'g.game_name',
                 'v.user_name',
-                $this->database::raw('total_videos.total_videos AS total_videos'),
-                $this->database::raw('total_views.total_views AS total_views'),
+                $this->db::raw('total_videos.total_videos AS total_videos'),
+                $this->db::raw('total_views.total_views AS total_views'),
                 'v.title AS most_viewed_title',
                 'v.view_count AS most_viewed_views',
                 'v.duration AS most_viewed_duration',
                 'v.created_at AS most_viewed_created_at'
             )
             ->join('Game as g', 'v.game_id', '=', 'g.game_id')
-            ->join($this->database::raw('(SELECT game_id, MAX(view_count) AS max_view_count FROM Video 
-                GROUP BY game_id) AS max_views_per_game'), function ($join) {
+            ->join($this->db::raw('(SELECT game_id, MAX(view_count) AS max_view_count FROM Video 
+            GROUP BY game_id) AS max_views_per_game'), function ($join) {
                 $join->on('v.game_id', '=', 'max_views_per_game.game_id')
                     ->on('v.view_count', '=', 'max_views_per_game.max_view_count');
             })
-            ->join($this->database::raw('(SELECT game_id, user_name, COUNT(*) AS total_videos FROM Video 
-                GROUP BY game_id, user_name) AS total_videos'), function ($join) {
+            ->join($this->db::raw('(SELECT game_id, user_name, COUNT(*) AS total_videos FROM Video 
+            GROUP BY game_id, user_name) AS total_videos'), function ($join) {
                 $join->on('v.game_id', '=', 'total_videos.game_id')
                     ->on('v.user_name', '=', 'total_videos.user_name');
             })
-            ->join($this->database::raw('(SELECT game_id, user_name, SUM(view_count) AS total_views FROM Video 
-                GROUP BY game_id, user_name) AS total_views'), function ($join) {
+            ->join($this->db::raw('(SELECT game_id, user_name, SUM(view_count) AS total_views FROM Video 
+            GROUP BY game_id, user_name) AS total_views'), function ($join) {
                 $join->on('v.game_id', '=', 'total_views.game_id')
                     ->on('v.user_name', '=', 'total_views.user_name');
             })
+            ->whereIn('v.game_id', $topGameIds)
             ->get();
-    }
 
-    private function respondWithData($results)
-    {
         $data = [];
         foreach ($results as $row) {
             $rowData = [
@@ -164,8 +79,10 @@ class GetTopOfTheTops extends Controller
                 "most_viewed_duration" => $row->most_viewed_duration,
                 "most_viewed_created_at" => $row->most_viewed_created_at
             ];
+
             $data[] = $rowData;
         }
+
         return response()->json($data, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
 }
