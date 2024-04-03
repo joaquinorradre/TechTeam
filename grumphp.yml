@@ -4,6 +4,7 @@ grumphp:
             allow_empty_message: false
             enforce_capitalized_subject: false
             skip_on_merge_commit: true
+            max_subject_width: 100
             matchers:
                 Must follow [issueNumber] - Description: '/^\[\d+\] - .+$/'
             case_insensitive: true
@@ -14,7 +15,6 @@ grumphp:
               - '/^\d+-[a-z0-9-]+$/'
               - 'main'
               - 'master'
-        
         phpcs:
             standard: [PSR12]
             whitelist_patterns:
