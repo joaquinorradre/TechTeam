@@ -43,17 +43,9 @@ class Methods
                     'game_name' => $game['name'],
                     'last_update' => now()
                 ]);
-            } else {
-                // Si el juego ya existe, puedes optar por actualizar su nombre o realizar alguna otra acción
-                // Por ejemplo, actualizar el nombre del juego en la base de datos:
-                DB::table('Game')->where('game_id', $game['id'])->update([
-                    'game_name' => $game['name'],
-                    'last_update' => now()
-                ]);
             }
         }
     }
-
 
     public static function fetchAndInsertVideos($gamesResponse, $clientId, $accessToken)
     {
@@ -103,10 +95,10 @@ class Methods
 
         if ($result) {
             $lastUpdateTimestamp = $result->last_update;
-            $lastUpTimestamp_dt = new DateTime($lastUpdateTimestamp);
+            $lastUpdateTimestamp_dt = new DateTime($lastUpdateTimestamp);
             $tiempoActual = now()->format('Y-m-d H:i:s');
             $tiempoActual_dt = new DateTime($tiempoActual);
-            $diff1 = $lastUpTimestamp_dt->diff($tiempoActual_dt);
+            $diff1 = $lastUpdateTimestamp_dt->diff($tiempoActual_dt);
             $hours = $diff1->format('%H');
             $minutes = $diff1->format('%I');
             $seconds = $diff1->format('%S');
