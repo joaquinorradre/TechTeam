@@ -132,7 +132,7 @@ class GetTopOfTheTops extends Controller
             )
             ->join('Game as g', 'v.game_id', '=', 'g.game_id')
             ->join($this->database::raw('(SELECT game_id, MAX(view_count) AS max_view_count FROM Video 
-                GROUP BY game_id) AS max_views_per_game'), function ($join) {
+            	GROUP BY game_id) AS max_views_per_game'), function ($join) {
                 $join->on('v.game_id', '=', 'max_views_per_game.game_id')
                     ->on('v.view_count', '=', 'max_views_per_game.max_view_count');
             })
@@ -166,6 +166,6 @@ class GetTopOfTheTops extends Controller
             ];
             $data[] = $rowData;
         }
-        return response()->json($data, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        echo response()->json($data, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
 }
