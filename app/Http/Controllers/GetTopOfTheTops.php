@@ -55,15 +55,34 @@ class GetTopOfTheTops extends Controller
     {
         $gamesResponse = $this->methods->fetchTwitchData($gamesTwitchUrl, $clientId, $accessToken);
         if (isset($gamesResponse['data'])) {
-            $this->updateGames($gamesResponse);
             $this->deleteObsoleteGames($gamesResponse);
+            $this->updateGames($gamesResponse, $request);
             $this->updateVideos($gamesResponse, $clientId, $accessToken);
             $results = $this->getGameData();
             return $this->respondWithData($results);
         }
     }
 
-    private function updateGames($gamesResponse)
+    private function updateExistingGame($gamesResponse, $request, $existingId)
+    {
+        if ($request->has('since')) {
+            $since = $request->input('since');
+            $timeDiffInSeconds = $this->methods->obtenerTiempoDesdeUltimaActualizacion($existingId);
+            if ($timeDiffInSeconds === null || $timeDiffInSeconds > $since) {
+                $this->updateGame($existingId, $gamesResponse);
+            }
+        } elseif (!($request->has('since'))) {
+            // Verificar si ha pasado más de 10 minutos desde la última actualización
+            $timeDiffInSeconds = $this->methods->obtenerTiempoDesdeUltimaActualizacion($existingId);
+            if ($timeDiffInSeconds === null || $timeDiffInSeconds > 600) { // 600 segundos = 10 minutos
+                $this->updateGame($existingId, $gamesResponse);
+            }
+        }
+    }
+
+
+
+    private function updateGames($gamesResponse, $request)
     {
         $games = array_slice($gamesResponse['data'], 0, 3);
         $existingGameIds = $this->database::table('Game')->pluck('game_id')->toArray();
@@ -71,18 +90,18 @@ class GetTopOfTheTops extends Controller
             return $game['id'];
         }, $games);
 
-        foreach ($existingGameIds as $existingId) {
-        // Verificar si ha pasado más de 10 minutos desde la última actualización
-            $timeDiffInSeconds = $this->methods->obtenerTiempoDesdeUltimaActualizacion($existingId);
-            if ($timeDiffInSeconds === null || $timeDiffInSeconds > 600) { // 600 segundos = 10 minutos
-                $this->updateGame($existingId, $gamesResponse);
-            }
-        }
-
         foreach ($games as $game) {
-            $existingGame = $this->database::table('Game')->where('game_id', $game['id'])->first();
+            $existingId = $game['id'];
+            $name = $game['name'];
+            $existingGame = DB::table('Game')->where('game_id', $existingId)->first();
             if (!$existingGame) {
-                $this->updateGame($game['id'], $gamesResponse);
+                DB::table('Game')->insert([
+                'game_id' => $game['id'],
+                'game_name' => $game['name'],
+                'last_update' => now()
+                ]);
+            } elseif ($existingGame) {
+                $this->updateExistingGame($gamesResponse, $request, $existingId);
             }
         }
     }
