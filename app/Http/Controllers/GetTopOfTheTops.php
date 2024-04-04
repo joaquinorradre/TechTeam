@@ -29,9 +29,9 @@ class GetTopOfTheTops extends Controller
         $accessToken = $this->methods->requestAccessToken($clientId, $clientSecret);
 
         if ($gameCount == 0 && isset($accessToken)) {
-            $this->updateGamesData($gamesTwitchUrl, $clientId, $accessToken);
+            return $this->updateGamesData($gamesTwitchUrl, $clientId, $accessToken);
         } elseif ($gameCount > 0 && isset($accessToken)) {
-            $this->updateExistingGamesData($gamesTwitchUrl, $clientId, $accessToken, $request);
+            return $this->updateExistingGamesData($gamesTwitchUrl, $clientId, $accessToken, $request);
         }
     }
 
@@ -47,7 +47,7 @@ class GetTopOfTheTops extends Controller
             $this->methods->insertGames($gamesResponse);
             $this->methods->fetchAndInsertVideos($gamesResponse, $clientId, $accessToken);
             $results = $this->getGameData();
-            $this->respondWithData($results);
+            return $this->respondWithData($results);
         }
     }
 
@@ -59,7 +59,7 @@ class GetTopOfTheTops extends Controller
             $this->deleteObsoleteGames($gamesResponse);
             $this->updateVideos($gamesResponse, $clientId, $accessToken);
             $results = $this->getGameData();
-            $this->respondWithData($results);
+            return $this->respondWithData($results);
         }
     }
 
@@ -72,23 +72,43 @@ class GetTopOfTheTops extends Controller
         }, $games);
 
         foreach ($existingGameIds as $existingId) {
-            if (!in_array($existingId, $newGameIds)) {
-                $this->database::table('Video')->where('game_id', $existingId)->delete();
-                $this->database::table('Game')->where('game_id', $existingId)->delete();
+        // Verificar si ha pasado más de 10 minutos desde la última actualización
+            $timeDiffInSeconds = $this->methods->obtenerTiempoDesdeUltimaActualizacion($existingId);
+            if ($timeDiffInSeconds === null || $timeDiffInSeconds > 600) { // 600 segundos = 10 minutos
+                $this->updateGame($existingId, $gamesResponse);
             }
         }
 
         foreach ($games as $game) {
             $existingGame = $this->database::table('Game')->where('game_id', $game['id'])->first();
             if (!$existingGame) {
-                $this->database::table('Game')->insert([
-                    'game_id' => $game['id'],
-                    'game_name' => $game['name'],
-                    'last_update' => now()
-                ]);
+                $this->updateGame($game['id'], $gamesResponse);
             }
         }
     }
+
+    private function updateGame($gameId, $gamesResponse)
+    {
+        $gameToUpdate = null;
+        foreach ($gamesResponse['data'] as $game) {
+            if ($game['id'] == $gameId) {
+                $gameToUpdate = $game;
+                break;
+            }
+        }
+
+        if ($gameToUpdate) {
+            $this->database::table('Video')->where('game_id', $gameId)->delete();
+            $this->database::table('Game')->where('game_id', $gameId)->delete();
+
+            $this->database::table('Game')->insert([
+            'game_id' => $gameToUpdate['id'],
+            'game_name' => $gameToUpdate['name'],
+            'last_update' => now()
+            ]);
+        }
+    }
+
 
     private function deleteObsoleteGames($gamesResponse)
     {
@@ -166,6 +186,6 @@ class GetTopOfTheTops extends Controller
             ];
             $data[] = $rowData;
         }
-        echo response()->json($data, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        return response()->json($data, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
 }
