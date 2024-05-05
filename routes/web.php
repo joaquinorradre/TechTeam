@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\GetStreams;
-use App\Http\Controllers\getUsers;
+use App\Http\Controllers\GetUsers;
 use App\Http\Controllers\GetTopOfTheTops;
 use Illuminate\Support\Facades\Route;
 
@@ -11,6 +11,6 @@ Route::get('/', function () {
 });
 
 Route::get('/analytics/streams', GetStreams::class);
-Route::get('/analytics/users', [GetUsers::class, 'getUserInfo']);
+Route::get('/analytics/users', GetUsers::class);
 Route::get('/analytics/topsofthetops', [GetTopOfTheTops::class, 'fetchData']);
 
