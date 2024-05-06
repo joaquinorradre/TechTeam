@@ -16,7 +16,6 @@ class GetStreamsTest extends TestCase
 
     public function gets_streams()
     {
-        // Define a dummy access token for testing
         $accessToken = 'dummy_access_token';
 
         $apiClient = Mockery::mock(ApiClient::class);
@@ -49,13 +48,10 @@ class GetStreamsTest extends TestCase
             ->once()
             ->andReturn($getStreamsExpectedResponse);
 
-        // Make a request to the correct endpoint
         $response = $this->get('/streams');
 
-        // Assert the response status code
         $response->assertStatus(200);
 
-        // Assert the response content
         $response->assertContent('[{"title":"Stream title","user_name":"user_name"}]');
     }
 }
