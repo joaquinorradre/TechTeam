@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\GetUsersRequest;
 use App\Services\GetStreamsService;
 use App\Services\NewTwitchApi;
 use Illuminate\Http\Request;
