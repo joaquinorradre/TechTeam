@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 {"version":1,"defects":{"Tests\\Feature\\GetStreamsTest::gets_streams":5},"times":{"Tests\\Feature\\GetStreamsTest::gets_streams":1.485}}
+=======
+{"version":1,"defects":{"Tests\\Feature\\GetStreamsTest::gets_streams":7},"times":{"Tests\\Feature\\GetStreamsTest::gets_streams":0.213}}
+>>>>>>> main

@@ -16,6 +16,7 @@ grumphp:
               - 'main'
               - 'master'
               - 'rama_miguel'
+              - 'rama_joaquin'
         phpcs:
             standard: [PSR12]
             whitelist_patterns:
