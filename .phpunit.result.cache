@@ -1,5 +1,1 @@
-<<<<<<< HEAD
-{"version":1,"defects":{"Tests\\Feature\\GetStreamsTest::gets_streams":5},"times":{"Tests\\Feature\\GetStreamsTest::gets_streams":1.485}}
-=======
-{"version":1,"defects":{"Tests\\Feature\\GetStreamsTest::gets_streams":7},"times":{"Tests\\Feature\\GetStreamsTest::gets_streams":0.213}}
->>>>>>> main
+{"version":1,"defects":{"Tests\\Feature\\GetStreamsTest::gets_streams":5,"Tests\\Feature\\GetUsersTest::gets_users":5,"Tests\\Unit\\Services\\GetStreamsTest::testGetUserData":7,"Tests\\Unit\\Services\\Test::testGetUserData":5},"times":{"Tests\\Feature\\GetStreamsTest::gets_streams":2.146,"Tests\\Feature\\GetUsersTest::gets_users":0.007,"Tests\\Unit\\Services\\GetStreamsTest::testGetUserData":0.007,"Tests\\Unit\\Services\\Test::testGetUserData":0.01}}

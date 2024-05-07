@@ -17,8 +17,10 @@ class StreamsDataManager
     public function getStreams($api_url): string
     {
         $this->getTokenTwitch();
-
+        var_dump($api_url);
+        var_dump($this->token);
         $response = $this->apiClient->makeCurlCall($api_url,$this->token);
+        //var_dump($response);
         return $response;
     }
 

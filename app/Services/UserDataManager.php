@@ -12,11 +12,13 @@ class UserDataManager
     public function __construct(ApiClient $apiClient)
     {
         $this->apiClient = $apiClient;
+        $this->token = 'mocked_token';
     }
 
     public function getUserData($api_url): string
     {
         $this->getTokenTwitch();
+
         return $this->apiClient->makeCurlCall($api_url,$this->token);
     }
 

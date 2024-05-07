@@ -31,6 +31,7 @@ class ApiClient
         }
 
         curl_close($curlHeaders);
+        var_dump($response);
         return $response;
     }
 
