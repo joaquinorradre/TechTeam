@@ -3,35 +3,44 @@
 namespace App\Services;
 
 use App\Clients\ApiClient;
+use App\Clients\DBClient;
 
 class StreamsDataManager
 {
-    private $token;
+    private string $token;
     private ApiClient $apiClient;
+    private DBClient $dbClient;
 
-    public function __construct(ApiClient $apiClient)
+    public function __construct(ApiClient $apiClient, DBClient $dBClient)
     {
         $this->apiClient = $apiClient;
+        $this->dbClient = $dBClient;
+        $this->token = $this->getTokenTwitch();
     }
 
     public function getStreams($api_url): string
     {
         $this->getTokenTwitch();
 
-        $response = $this->apiClient->makeCurlCall($api_url,$this->token);
-        return $response;
+        return $this->apiClient->makeCurlCall($api_url,$this->token);
     }
 
     public function getTokenTwitch(): string
     {
-        $url = 'https://id.twitch.tv/oauth2/token';
+        $databaseTokenResponse = $this->dbClient->getTokenFromDataBase();
 
-        $response = $this->apiClient->getToken($url);
-        $result = json_decode($response, true);
-
-        if(isset($result['access_token'])){
-            $this->token = $result['access_token'];
+        if ($databaseTokenResponse !== null) {
+            return $databaseTokenResponse;
         }
+
+        $apiTokenResponse = $this->apiClient->getTokenFromAPI();
+        $result = json_decode($apiTokenResponse, true);
+
+        if (isset($result['access_token'])) {
+            $this->token = $result['access_token'];
+            $this->dbClient->addTokenToDataBase($this->token);
+        }
+
         return $this->token;
     }
 }

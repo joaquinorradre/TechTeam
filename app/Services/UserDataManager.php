@@ -3,15 +3,19 @@
 namespace App\Services;
 
 use App\Clients\ApiClient;
+use App\Clients\DBClient;
 
 class UserDataManager
 {
     private string $token;
     private ApiClient $apiClient;
+    private DBClient $dbClient;
 
-    public function __construct(ApiClient $apiClient)
+    public function __construct(ApiClient $apiClient, DBClient $dbClient)
     {
         $this->apiClient = $apiClient;
+        $this->dbClient = $dbClient;
+
     }
 
     public function getUserData($api_url): string
@@ -22,12 +26,16 @@ class UserDataManager
 
     public function getTokenTwitch(): string
     {
-        $url = 'https://id.twitch.tv/oauth2/token';
+        $databaseTokenResponse = $this->dbClient->getTokenFromDataBase();
 
-        $response = $this->apiClient->getToken($url);
-        $result = json_decode($response, true);
+        if ($databaseTokenResponse !== null) {
+            return $databaseTokenResponse;
+        }
 
-        if(isset($result['access_token'])){
+        $apiTokenResponse = $this->apiClient->getTokenFromAPI();
+        $result = json_decode($apiTokenResponse, true);
+
+        if (isset($result['access_token'])) {
             $this->token = $result['access_token'];
         }
 
