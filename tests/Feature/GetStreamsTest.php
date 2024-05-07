@@ -2,60 +2,33 @@
 
 namespace Tests\Feature;
 
-// use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Services\ApiClient;
-use App\Services\StreamsManager;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Clients\ApiClient;
+use App\Services\StreamsDataManager;
+use App\Http\Controllers\GetStreams;
+use App\Services\GetStreamsService;
 use Mockery;
 use Tests\TestCase;
+use Illuminate\Http\Request;
 
 class GetStreamsTest extends TestCase
 {
     /**
      * @test
      **/
-
-    public function gets_streams()
+    public function testErrorHandling()
     {
-        $apiClient = Mockery::mock(ApiClient::class);
+        $mockGetStreamsService = Mockery::mock(GetStreamsService::class);
+        $mockGetStreamsService->shouldReceive('execute')->andThrow(new \Exception('Service Unavailable', 503));
 
-        $this->app
-            ->when(StreamsManager::class)
-            ->needs(ApiClient::class)
-            ->give(fn() => $apiClient);
+        $controller = new GetStreams($mockGetStreamsService);
 
-        $getTokenExpectedResponse = json_encode([
-            'access_token' => 'zfmr6i7cbwken2maslfu9v89tvq9ne',
-            'expires_in' => 5443987,
-            'token_type' => 'bearer'
+        $response = $controller->__invoke();
+
+        $response->assertJson([
+            'error' => 'No se pueden devolver usuarios en este momento, inténtalo más tarde'
         ]);
 
-        $getStreamsExpectedResponse = json_encode(['data' => [[
-            'title' => 'Stream title',
-            'user_name' => 'user_name',
-        ]]]);
-
-        $apiClient
-            ->expects('getToken')
-            ->with('https://id.twitch.tv/oauth2/token')
-            ->once()
-            ->andReturn($getTokenExpectedResponse);
-
-        $apiClient
-            ->expects('makeCurlCall')
-            ->with('https://api.twitch.tv/helix/streams', [0 => "Authorization: Bearer zfmr6i7cbwken2maslfu9v89tvq9ne"])
-            ->once()
-            ->andReturn($getStreamsExpectedResponse);
-
-        $response = $this->get('/analytics/streams');
-        //dd($response->getContent());
-        $response->assertStatus(200);
-
-        $response->assertJsonFragment([
-            "title" => "【#ストグラ 56日目】レダーヨージロー鳩禁指示禁",
-            "user_name" => "らっだぁ"
-        ]);
-
-
-
+        $response->assertStatus(503);
     }
 }
