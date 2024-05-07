@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Services\UserDataManager;
-use Illuminate\Http\Request;
+use App\Http\Requests\GetUsersRequest; // Importar el Form Request
+use Illuminate\Http\JsonResponse;
 
 class GetUsers extends Controller
 {
@@ -17,12 +18,9 @@ class GetUsers extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(Request $request): \Illuminate\Http\JsonResponse
+    public function __invoke(GetUsersRequest $request): JsonResponse
     {
         $userId = $request->input('id');
-        if (!$userId) {
-            return response()->json(['error' => 'Se requiere el parámetro "id" en la URL'], 400);
-        }
 
         $url = "https://api.twitch.tv/helix/users?id=$userId";
 
@@ -40,6 +38,7 @@ class GetUsers extends Controller
                 $filteredUsers[] = $userData;
             }
         }
+
         return response()->json($filteredUsers, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 }
