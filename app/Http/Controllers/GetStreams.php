@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\GetUsersRequest;
 use App\Services\GetStreamsService;
 use App\Services\NewTwitchApi;
 use Illuminate\Http\Request;
@@ -25,4 +26,3 @@ class GetStreams extends Controller
         return response()->json($streams, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
 }
-

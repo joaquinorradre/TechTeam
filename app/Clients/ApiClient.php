@@ -7,8 +7,9 @@ class ApiClient
 {
     private const CLIENT_ID = 'szp2ugo2j6edjt8ytdak5n2n3hjkq3';
     private const CLIENT_SECRET = '07gk0kbwwzpuw2uqdzy1bjnsz9k32k';
+    private string $url = 'https://id.twitch.tv/oauth2/token';
 
-    public function getToken($url): string
+    public function getTokenFromAPI(): string
     {
         $data = array(
             'client_id' => self::CLIENT_ID,
@@ -16,7 +17,7 @@ class ApiClient
             'grant_type' => 'client_credentials'
         );
         $curlHeaders = curl_init();
-        curl_setopt($curlHeaders,CURLOPT_URL,$url);
+        curl_setopt($curlHeaders,CURLOPT_URL,$this->url);
         curl_setopt($curlHeaders,CURLOPT_POST,1);
         curl_setopt($curlHeaders,CURLOPT_POSTFIELDS,http_build_query($data));
         curl_setopt($curlHeaders,CURLOPT_RETURNTRANSFER,true);
