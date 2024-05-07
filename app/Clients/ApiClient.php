@@ -1,9 +1,7 @@
 <?php
 
-namespace App\Services;
+namespace App\Clients;
 
-
-use function Laravel\Prompts\error;
 
 class ApiClient
 {

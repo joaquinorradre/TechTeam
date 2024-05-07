@@ -1,31 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="LaravelPint">
-    <laravel_pint_settings>
-      <LaravelPintConfiguration tool_path="$PROJECT_DIR$/vendor/bin/pint" />
-    </laravel_pint_settings>
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
   </component>
-  <component name="MessDetector">
-    <phpmd_settings>
-      <MessDetectorConfiguration tool_path="$PROJECT_DIR$/vendor/bin/phpmd" />
-    </phpmd_settings>
+  <component name="ChangeListManager">
+    <list default="true" id="6fae0e6d-2980-4118-82f6-ce870d06cdc9" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/commandlinetools/Laravel_5_6_24__12_19_PM.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/Feature/GetUsersTest.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/codeception.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/commandlinetools/Laravel_5_5_24_22_34.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/commandlinetools/schemas/frameworkDescriptionVersion1.1.4.xsd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/php-test-framework.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php-test-framework.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.phpunit.result.cache" beforeDir="false" afterPath="$PROJECT_DIR$/.phpunit.result.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/GetUsers.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/GetUsers.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Services/ApiClient.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Clients/ApiClient.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Services/GetStreamsService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/GetStreamsService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Services/GetUsersService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/GetUsersService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Services/NewTwitchApi.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/NewTwitchApi.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Services/UsersManager.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/UserDataManager.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/composer.lock" beforeDir="false" afterPath="$PROJECT_DIR$/composer.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Feature/GetStreamsTest.php" beforeDir="false" afterPath="$PROJECT_DIR$/tests/Feature/GetStreamsTest.php" afterDir="false" />
+    </list>
+    <list id="bc40dc2e-a2be-44d9-b263-05433d5fc401" name="Changes by joaquin" comment="">
+      <change beforePath="$PROJECT_DIR$/app/Services/StreamsManager.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/StreamsDataManager.php" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="MessDetectorOptionsConfiguration">
-    <option name="transferred" value="true" />
+  <component name="ComposerSettings" synchronizationState="SYNCHRONIZE">
+    <pharConfigPath>$PROJECT_DIR$/composer.json</pharConfigPath>
+    <execution>
+      <executable path="composer" />
+    </execution>
   </component>
-  <component name="PHPCSFixerOptionsConfiguration">
-    <option name="transferred" value="true" />
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="PHPCodeSnifferOptionsConfiguration">
-    <option name="highlightLevel" value="WARNING" />
-    <option name="transferred" value="true" />
-  </component>
-  <component name="PhpCodeSniffer">
-    <phpcs_settings>
-      <PhpCSConfiguration beautifier_path="$PROJECT_DIR$/vendor/bin/phpcbf" tool_path="$PROJECT_DIR$/vendor/bin/phpcs" />
-    </phpcs_settings>
-  </component>
-  <component name="PhpIncludePathManager">
+  <component name="PhpWorkspaceProjectConfiguration" interpreter_name="sail-8.3/app:latest">
     <include_path>
       <path value="$PROJECT_DIR$/vendor/psr/simple-cache" />
       <path value="$PROJECT_DIR$/vendor/psr/container" />
@@ -173,108 +195,113 @@
       <path value="$PROJECT_DIR$/vendor/composer" />
     </include_path>
   </component>
-  <component name="PhpInterpreters">
-    <interpreters>
-      <interpreter id="6af75660-b55a-4803-aaed-a7ecb2a0c4a2" name="sail-8.3/app:latest" home="docker://DATA" auto="false" debugger_id="php.debugger.XDebug">
-        <remote_data INTERPRETER_PATH="php" HELPERS_PATH="/opt/.phpstorm_helpers" VALID="true" RUN_AS_ROOT_VIA_SUDO="false" DOCKER_ACCOUNT_NAME="Docker" DOCKER_IMAGE_NAME="sail-8.3/app:latest" DOCKER_REMOTE_PROJECT_PATH="/opt/project" />
-      </interpreter>
-    </interpreters>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 0
+}</component>
+  <component name="ProjectId" id="2g5c2G1ixnAUCi9yosjlDRxT7Mu" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PhpInterpretersPhpInfoCache">
-    <phpInfoCache>
-      <interpreter name="sail-8.3/app:latest">
-        <phpinfo binary_type="PHP" php_cli="/usr/bin/php8.3" path_separator=":" version="8.3.4">
-          <additional_php_ini>/etc/php/8.3/cli/conf.d/10-mysqlnd.ini, /etc/php/8.3/cli/conf.d/10-opcache.ini, /etc/php/8.3/cli/conf.d/10-pdo.ini, /etc/php/8.3/cli/conf.d/15-xml.ini, /etc/php/8.3/cli/conf.d/20-bcmath.ini, /etc/php/8.3/cli/conf.d/20-calendar.ini, /etc/php/8.3/cli/conf.d/20-ctype.ini, /etc/php/8.3/cli/conf.d/20-curl.ini, /etc/php/8.3/cli/conf.d/20-dom.ini, /etc/php/8.3/cli/conf.d/20-exif.ini, /etc/php/8.3/cli/conf.d/20-ffi.ini, /etc/php/8.3/cli/conf.d/20-fileinfo.ini, /etc/php/8.3/cli/conf.d/20-ftp.ini, /etc/php/8.3/cli/conf.d/20-gd.ini, /etc/php/8.3/cli/conf.d/20-gettext.ini, /etc/php/8.3/cli/conf.d/20-iconv.ini, /etc/php/8.3/cli/conf.d/20-igbinary.ini, /etc/php/8.3/cli/conf.d/20-imagick.ini, /etc/php/8.3/cli/conf.d/20-imap.ini, /etc/php/8.3/cli/conf.d/20-intl.ini, /etc/php/8.3/cli/conf.d/20-ldap.ini, /etc/php/8.3/cli/conf.d/20-mbstring.ini, /etc/php/8.3/cli/conf.d/20-msgpack.ini, /etc/php/8.3/cli/conf.d/20-mysqli.ini, /etc/php/8.3/cli/conf.d/20-pcov.ini, /etc/php/8.3/cli/conf.d/20-pdo_mysql.ini, /etc/php/8.3/cli/conf.d/20-pdo_pgsql.ini, /etc/php/8.3/cli/conf.d/20-pdo_sqlite.ini, /etc/php/8.3/cli/conf.d/20-pgsql.ini, /etc/php/8.3/cli/conf.d/20-phar.ini, /etc/php/8.3/cli/conf.d/20-posix.ini, /etc/php/8.3/cli/conf.d/20-readline.ini, /etc/php/8.3/cli/conf.d/20-redis.ini, /etc/php/8.3/cli/conf.d/20-shmop.ini, /etc/php/8.3/cli/conf.d/20-simplexml.ini, /etc/php/8.3/cli/conf.d/20-soap.ini, /etc/php/8.3/cli/conf.d/20-sockets.ini, /etc/php/8.3/cli/conf.d/20-sqlite3.ini, /etc/php/8.3/cli/conf.d/20-sysvmsg.ini, /etc/php/8.3/cli/conf.d/20-sysvsem.ini, /etc/php/8.3/cli/conf.d/20-sysvshm.ini, /etc/php/8.3/cli/conf.d/20-tokenizer.ini, /etc/php/8.3/cli/conf.d/20-xdebug.ini, /etc/php/8.3/cli/conf.d/20-xmlreader.ini, /etc/php/8.3/cli/conf.d/20-xmlwriter.ini, /etc/php/8.3/cli/conf.d/20-xsl.ini, /etc/php/8.3/cli/conf.d/20-zip.ini, /etc/php/8.3/cli/conf.d/25-memcached.ini, /etc/php/8.3/cli/conf.d/25-swoole.ini, /etc/php/8.3/cli/conf.d/99-sail.ini</additional_php_ini>
-          <configuration_file>/etc/php/8.3/cli/php.ini</configuration_file>
-          <configuration_options>
-            <configuration_option name="include_path" value=".:/usr/share/php" />
-          </configuration_options>
-          <debuggers>
-            <debugger_info debugger="xdebug" debugger_version="3.3.1">
-              <debug_extensions />
-            </debugger_info>
-          </debuggers>
-          <loaded_extensions>
-            <extension name="Core" />
-            <extension name="FFI" />
-            <extension name="PDO" />
-            <extension name="Phar" />
-            <extension name="Reflection" />
-            <extension name="SPL" />
-            <extension name="SimpleXML" />
-            <extension name="Zend OPcache" />
-            <extension name="bcmath" />
-            <extension name="calendar" />
-            <extension name="ctype" />
-            <extension name="curl" />
-            <extension name="date" />
-            <extension name="dom" />
-            <extension name="exif" />
-            <extension name="fileinfo" />
-            <extension name="filter" />
-            <extension name="ftp" />
-            <extension name="gd" />
-            <extension name="gettext" />
-            <extension name="hash" />
-            <extension name="iconv" />
-            <extension name="igbinary" />
-            <extension name="imagick" />
-            <extension name="imap" />
-            <extension name="intl" />
-            <extension name="json" />
-            <extension name="ldap" />
-            <extension name="libxml" />
-            <extension name="mbstring" />
-            <extension name="memcached" />
-            <extension name="msgpack" />
-            <extension name="mysqli" />
-            <extension name="mysqlnd" />
-            <extension name="openssl" />
-            <extension name="pcntl" />
-            <extension name="pcov" />
-            <extension name="pcre" />
-            <extension name="pdo_mysql" />
-            <extension name="pdo_pgsql" />
-            <extension name="pdo_sqlite" />
-            <extension name="pgsql" />
-            <extension name="posix" />
-            <extension name="random" />
-            <extension name="readline" />
-            <extension name="redis" />
-            <extension name="session" />
-            <extension name="shmop" />
-            <extension name="soap" />
-            <extension name="sockets" />
-            <extension name="sodium" />
-            <extension name="sqlite3" />
-            <extension name="standard" />
-            <extension name="swoole" />
-            <extension name="sysvmsg" />
-            <extension name="sysvsem" />
-            <extension name="sysvshm" />
-            <extension name="tokenizer" />
-            <extension name="xdebug" />
-            <extension name="xml" />
-            <extension name="xmlreader" />
-            <extension name="xmlwriter" />
-            <extension name="xsl" />
-            <extension name="zip" />
-            <extension name="zlib" />
-          </loaded_extensions>
-        </phpinfo>
-      </interpreter>
-    </phpInfoCache>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;PHPUnit.GetStreamsTest.executor&quot;: &quot;Run&quot;,
+    &quot;PHPUnit.GetStreamsTest.gets_streams.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;credentialsType com.jetbrains.php.remote.interpreter.ui.PhpCreateRemoteSdkForm&quot;: &quot;Docker&quot;,
+    &quot;credentialsType com.jetbrains.php.remote.interpreter.ui.PhpInplaceEditRemoteSdkForm&quot;: &quot;Docker&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;rama__miguel&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.webide.settings.project.settings.php&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RunManager" selected="PHPUnit.GetStreamsTest">
+    <configuration name="GetStreamsTest" type="PHPUnitRunConfigurationType" factoryName="PHPUnit" temporary="true">
+      <TestRunner class="Tests\Feature\GetStreamsTest" configuration_file="/opt/project/phpunit.xml" file="$PROJECT_DIR$/tests/Feature/GetStreamsTest.php" scope="Class" />
+      <method v="2" />
+    </configuration>
+    <configuration name="GetStreamsTest.gets_streams" type="PHPUnitRunConfigurationType" factoryName="PHPUnit" temporary="true">
+      <TestRunner class="Tests\Feature\GetStreamsTest" configuration_file="/opt/project/phpunit.xml" file="$PROJECT_DIR$/tests/Feature/GetStreamsTest.php" method="gets_streams" scope="Method" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Main" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
+      <TestRunner configuration_file="$PROJECT_DIR$/phpunit.xml" scope="XML" use_alternative_configuration_file="true" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="PHPUnit.GetStreamsTest" />
+        <item itemvalue="PHPUnit.GetStreamsTest.gets_streams" />
+      </list>
+    </recent_temporary>
   </component>
-  <component name="PhpProjectSharedConfiguration" php_language_level="8.3" />
-  <component name="PhpStanOptionsConfiguration">
-    <option name="transferred" value="true" />
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-1d06a55b98c1-91d5c284f522-JavaScript-PS-241.15989.102" />
+        <option value="bundled-php-predefined-ba97393d7c68-c76157a7178b-com.jetbrains.php.sharedIndexes-PS-241.15989.102" />
+      </set>
+    </attachedChunks>
   </component>
-  <component name="PhpUnit">
-    <phpunit_settings>
-      <PhpUnitSettings configuration_file_path="$PROJECT_DIR$/phpunit.xml" custom_loader_path="$PROJECT_DIR$/vendor/autoload.php" use_configuration_file="true" />
-    </phpunit_settings>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="6fae0e6d-2980-4118-82f6-ce870d06cdc9" name="Changes" comment="" />
+      <created>1714990670095</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1714990670095</updated>
+      <workItem from="1714990671688" duration="3092000" />
+      <workItem from="1714993792847" duration="1824000" />
+      <workItem from="1715088034570" duration="1670000" />
+    </task>
+    <servers />
   </component>
-  <component name="PsalmOptionsConfiguration">
-    <option name="transferred" value="true" />
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="User">
+          <value>
+            <list>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="*" />
+                </option>
+              </RecentGroup>
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="rama_miguel" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>

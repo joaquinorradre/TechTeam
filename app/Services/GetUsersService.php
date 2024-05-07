@@ -4,18 +4,18 @@ namespace App\Services;
 
 class GetUsersService
 {
-    private UsersManager $userManager;
+    private UserDataManager $userManager;
 
-    public function __construct(UsersManager $usersManager)
+    public function __construct(UserDataManager $UserDataManager)
     {
-        $this->userManager = $usersManager;
+        $this->userManager = $UserDataManager;
     }
 
     public function getUserInfo($userId)
     {
         $url = "https://api.twitch.tv/helix/users?id=$userId";
 
-        $users = $this->userManager->getUsers($url);
+        $users = $this->userManager->getUserData($url);
 
         $response = json_decode($users, true);
 

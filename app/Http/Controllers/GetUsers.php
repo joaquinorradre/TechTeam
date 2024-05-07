@@ -2,29 +2,44 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\GetUsersService;
+use App\Services\UserDataManager;
 use Illuminate\Http\Request;
 
 class GetUsers extends Controller
 {
-    private GetUsersService $getUserService;
+    private UserDataManager $userDataManager;
 
-    public function __construct(GetUsersService $getUserService)
+    public function __construct(UserDataManager $userDataManager)
     {
-        $this->getUserService = $getUserService;
+        $this->userDataManager = $userDataManager;
     }
 
     /**
-     * Handle the incoming request
+     * Handle the incoming request.
      */
     public function __invoke(Request $request): \Illuminate\Http\JsonResponse
     {
-        if(!$request->has('id')){
+        $userId = $request->input('id');
+        if (!$userId) {
             return response()->json(['error' => 'Se requiere el parámetro "id" en la URL'], 400);
         }
-        $userId = $request->input('id');
-        $userInfo = $this->getUserService->getUserInfo($userId);
 
-        return response()->json($userInfo, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        $url = "https://api.twitch.tv/helix/users?id=$userId";
+
+        $usersData = $this->userDataManager->getUserData($url);
+
+        $response = json_decode($usersData, true);
+
+        $filteredUsers = [];
+        if (isset($response['data'])) {
+            foreach ($response['data'] as $user) {
+                $userData = [];
+                foreach ($user as $key => $value) {
+                    $userData[$key] = $value;
+                }
+                $filteredUsers[] = $userData;
+            }
+        }
+        return response()->json($filteredUsers, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 }

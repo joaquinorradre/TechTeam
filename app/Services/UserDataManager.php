@@ -2,9 +2,11 @@
 
 namespace App\Services;
 
-class StreamsManager
+use App\Clients\ApiClient;
+
+class UserDataManager
 {
-    private $token;
+    private string $token;
     private ApiClient $apiClient;
 
     public function __construct(ApiClient $apiClient)
@@ -12,12 +14,10 @@ class StreamsManager
         $this->apiClient = $apiClient;
     }
 
-    public function getStreams($api_url): string
+    public function getUserData($api_url): string
     {
         $this->getTokenTwitch();
-
-        $response = $this->apiClient->makeCurlCall($api_url,$this->token);
-        return $response;
+        return $this->apiClient->makeCurlCall($api_url,$this->token);
     }
 
     public function getTokenTwitch(): string
@@ -30,6 +30,7 @@ class StreamsManager
         if(isset($result['access_token'])){
             $this->token = $result['access_token'];
         }
+
         return $this->token;
     }
 }
