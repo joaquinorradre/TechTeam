@@ -48,8 +48,14 @@ class GetStreamsTest extends TestCase
 
         $response = $this->get('/analytics/streams');
         //dd($response->getContent());
-        $response->assertStatus(500);
+        $response->assertStatus(200);
 
-        $response->assertContent('[{"title":"Stream title","user_name":"user_name"}]');
+        $response->assertJsonFragment([
+            "title" => "【#ストグラ 56日目】レダーヨージロー鳩禁指示禁",
+            "user_name" => "らっだぁ"
+        ]);
+
+
+
     }
 }

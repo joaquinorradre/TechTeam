@@ -4,9 +4,9 @@ namespace App\Services;
 
 class GetStreamsService
 {
-    private StreamsManager $streamsManager;
+    private StreamsDataManager $streamsManager;
 
-    public function __construct(StreamsManager $streamsManager)
+    public function __construct(StreamsDataManager $streamsManager)
     {
         $this->streamsManager = $streamsManager;
     }
