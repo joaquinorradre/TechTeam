@@ -25,4 +25,3 @@ class GetStreams extends Controller
         return response()->json($streams, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
 }
-
