@@ -15,6 +15,7 @@ grumphp:
               - '/^\d+-[a-z0-9-]+$/'
               - 'main'
               - 'master'
+              - 'rama_joaquin'
         phpcs:
             standard: [PSR12]
             whitelist_patterns:

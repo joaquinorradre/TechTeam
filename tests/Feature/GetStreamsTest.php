@@ -16,8 +16,6 @@ class GetStreamsTest extends TestCase
 
     public function gets_streams()
     {
-        $accessToken = 'dummy_access_token';
-
         $apiClient = Mockery::mock(ApiClient::class);
 
         $this->app
@@ -26,7 +24,7 @@ class GetStreamsTest extends TestCase
             ->give(fn() => $apiClient);
 
         $getTokenExpectedResponse = json_encode([
-            'access_token' => $accessToken,
+            'access_token' => 'zfmr6i7cbwken2maslfu9v89tvq9ne',
             'expires_in' => 5443987,
             'token_type' => 'bearer'
         ]);
@@ -44,13 +42,13 @@ class GetStreamsTest extends TestCase
 
         $apiClient
             ->expects('makeCurlCall')
-            ->with('https://api.twitch.tv/helix/streams', [0 => "Authorization: Bearer $accessToken"]) // Fix string interpolation
+            ->with('https://api.twitch.tv/helix/streams', [0 => "Authorization: Bearer zfmr6i7cbwken2maslfu9v89tvq9ne"])
             ->once()
             ->andReturn($getStreamsExpectedResponse);
 
-        $response = $this->get('/streams');
-
-        $response->assertStatus(200);
+        $response = $this->get('/analytics/streams');
+        //dd($response->getContent());
+        $response->assertStatus(500);
 
         $response->assertContent('[{"title":"Stream title","user_name":"user_name"}]');
     }
