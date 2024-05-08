@@ -24,7 +24,7 @@ class DBClient
     }
 
 
-    public function addTokenToDataBase(string $token): void
+    public function addTokenToDatabase(string $token): void
     {
         $currentTime = now(); // Use Carbon instance for the current time
 
@@ -33,6 +33,7 @@ class DBClient
             'created_at' => $currentTime,
             'updated_at' => $currentTime,
         ]);
+
     }
 
 }

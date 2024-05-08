@@ -30,9 +30,8 @@ class TwitchTokenService
         try {
             $apiTokenResponse = $this->apiClient->getTokenFromAPI();
             $result = json_decode($apiTokenResponse, true);
-
             if (isset($result['access_token'])) {
-                $this->dbClient->addTokenToDatabase($result['token']);
+                $this->dbClient->addTokenToDatabase($result['access_token']);
                 return $result['access_token'];
             } else {
                 throw new Exception("No se pudo obtener el token de la API de Twitch");

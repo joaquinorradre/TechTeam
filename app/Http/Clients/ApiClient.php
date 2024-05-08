@@ -30,7 +30,6 @@ class ApiClient
         }
 
         curl_close($curlHeaders);
-
         return $response;
     }
 
@@ -50,7 +49,7 @@ class ApiClient
         $http_status = curl_getinfo($curlHeaders, CURLINFO_HTTP_CODE);
 
         if(curl_errno($curlHeaders)) {
-            echo 'Error in cURL request to get live streams: ' . curl_error($curlHeaders);
+            echo 'Error al solicitar petición a Twitch ' . curl_error($curlHeaders);
             exit;
         }
         curl_close($curlHeaders);

@@ -4,42 +4,45 @@ namespace App\Services;
 
 use App\Http\Clients\ApiClient;
 use App\Http\Clients\DBClient;
+use Exception;
+use Symfony\Component\HttpFoundation\Response;
 
 class UserDataManager
 {
-    private string $token;
     private ApiClient $apiClient;
     private DBClient $dbClient;
+    private TwitchTokenService $twitchTokenService;
+    private const string API_USER_URL = 'https://api.twitch.tv/helix/users';
 
-    public function __construct(ApiClient $apiClient, DBClient $dbClient)
+    public function __construct(ApiClient $apiClient, DBClient $dbClient, TwitchTokenService $twitchTokenService)
     {
         $this->apiClient = $apiClient;
         $this->dbClient = $dbClient;
+        $this->twitchTokenService = $twitchTokenService;
 
     }
 
     public function getUserData($userId): string
     {
-        $api_url = "https://api.twitch.tv/helix/users?id=$userId";
-        $this->getTokenTwitch();
-        return $this->apiClient->makeCurlCall($api_url,$this->token);
-    }
-
-    public function getTokenTwitch(): string
-    {
-        $databaseTokenResponse = $this->dbClient->getTokenFromDataBase();
-
-        if ($databaseTokenResponse !== null) {
-            return $databaseTokenResponse;
+        try {
+            $twitchToken = $this->twitchTokenService->getToken();
+        } catch (Exception $exception) {
+            return response($exception->getMessage(), $exception->getCode());
         }
 
-        $apiTokenResponse = $this->apiClient->getTokenFromAPI();
-        $result = json_decode($apiTokenResponse, true);
+        try {
+            $userIdLink = self::API_USER_URL . "?id=$userId";
+            $result = $this->apiClient->makeCurlCall($userIdLink, $twitchToken);
+            $streamsResponse = $result['response'];
+            $statusCode = $result['status'];
 
-        if (isset($result['access_token'])) {
-            $this->token = $result['access_token'];
+            if ($statusCode == Response::HTTP_INTERNAL_SERVER_ERROR) {
+                return response()->json(['error' => 'No se pueden devolver usuarios en este momento, inténtalo más tarde'], Response::HTTP_SERVICE_UNAVAILABLE);
+            }
+            return $streamsResponse;
+        } catch (Exception $exception) {
+            return response($exception->getMessage(), $exception->getCode());
         }
-
-        return $this->token;
     }
+
 }

@@ -6,7 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Clients\ApiClient;
 use App\Services\StreamsDataManager;
 use App\Http\Controllers\GetStreams;
-use App\Services\GetStreamsService;
+use App\Services\GetUsersService;
 use Mockery;
 use Tests\TestCase;
 use Illuminate\Http\Request;
