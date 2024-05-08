@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Clients;
+namespace App\Http\Clients;
 
 use Illuminate\Support\Facades\DB;
 

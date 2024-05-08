@@ -2,45 +2,45 @@
 
 namespace App\Services;
 
-use App\Clients\ApiClient;
-use App\Clients\DBClient;
+use App\Http\Clients\ApiClient;
+use App\Http\Clients\DBClient;
+use Exception;
+use Symfony\Component\HttpFoundation\Response;
 
 class StreamsDataManager
 {
-    private string $token;
     private ApiClient $apiClient;
-    private DBClient $dbClient;
+    private TwitchTokenService $twitchTokenService;
+    private const string API_STREAMS_URL = 'https://api.twitch.tv/helix/streams';
 
-    public function __construct(ApiClient $apiClient, DBClient $dBClient)
+    public function __construct(ApiClient $apiClient, TwitchTokenService $twitchTokenService)
     {
         $this->apiClient = $apiClient;
-        $this->dbClient = $dBClient;
-        $this->token = $this->getTokenTwitch();
+        $this->twitchTokenService = $twitchTokenService;
     }
 
-    public function getStreams($api_url): string
+    public function getStreams(): string
     {
-        $this->getTokenTwitch();
-
-        return $this->apiClient->makeCurlCall($api_url,$this->token);
-    }
-
-    public function getTokenTwitch(): string
-    {
-        $databaseTokenResponse = $this->dbClient->getTokenFromDataBase();
-
-        if ($databaseTokenResponse !== null) {
-            return $databaseTokenResponse;
+        try {
+            $twitchToken = $this->twitchTokenService->getToken();
+        } catch (Exception $exception) {
+            return response($exception->getMessage(), $exception->getCode());
         }
 
-        $apiTokenResponse = $this->apiClient->getTokenFromAPI();
-        $result = json_decode($apiTokenResponse, true);
+        try {
+            $result = $this->apiClient->makeCurlCall(self::API_STREAMS_URL, $twitchToken);
+            $streamsResponse = $result['response'];
+            $statusCode = $result['status'];
 
-        if (isset($result['access_token'])) {
-            $this->token = $result['access_token'];
-            $this->dbClient->addTokenToDataBase($this->token);
+            if ($statusCode == Response::HTTP_INTERNAL_SERVER_ERROR) {
+                return response()->json(['error' => 'No se pueden devolver streams en este momento, inténtalo más tarde'], Response::HTTP_SERVICE_UNAVAILABLE);
+            }
+            return $streamsResponse;
+        } catch (Exception $exception) {
+            return response($exception->getMessage(), $exception->getCode());
         }
-
-        return $this->token;
     }
+
+
+
 }
