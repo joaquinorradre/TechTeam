@@ -2,17 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Serializers\UserDataSerializer;
+use App\Services\GetStreamsService;
+use App\Services\GetUsersService;
 use App\Services\UserDataManager;
-use App\Http\Requests\GetUsersRequest; // Importar el Form Request
+use App\Http\Requests\GetUsersRequest;
 use Illuminate\Http\JsonResponse;
 
 class GetUsersController extends Controller
 {
-    private UserDataManager $userDataManager;
+    private UserDataSerializer $userSerializer;
+    private GetUsersService $getUsersService;
 
-    public function __construct(UserDataManager $userDataManager)
+
+    public function __construct(GetUsersService $getUsersService, UserDataSerializer $userSerializer)
     {
-        $this->userDataManager = $userDataManager;
+        $this->getUsersService = $getUsersService;
+        $this->userSerializer = $userSerializer;
     }
 
     /**
@@ -22,21 +28,9 @@ class GetUsersController extends Controller
     {
         $userId = $request->input('id');
 
-        $usersData = $this->userDataManager->getUserData($userId);
+        $userData = $this->getUsersService->execute($userId);
+        $serializedUserData = $this->userSerializer->serialize($userData);
 
-        $response = json_decode($usersData, true);
-
-        $filteredUsers = [];
-        if (isset($response['data'])) {
-            foreach ($response['data'] as $user) {
-                $userData = [];
-                foreach ($user as $key => $value) {
-                    $userData[$key] = $value;
-                }
-                $filteredUsers[] = $userData;
-            }
-        }
-
-        return response()->json($filteredUsers, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        return response()->json($serializedUserData, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 }

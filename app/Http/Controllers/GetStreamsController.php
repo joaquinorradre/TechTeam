@@ -23,7 +23,7 @@ class GetStreamsController extends Controller
     {
 
         $streams = $this->getStreamsService->execute();
-        $serializedStreams = $this->streamsDataSerializer->serialize($streams);
+        $serializedStreams = $this->streamsSerializer->serialize($streams);
 
         return response()->json($serializedStreams, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
