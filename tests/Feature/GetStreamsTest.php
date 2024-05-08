@@ -16,19 +16,25 @@ class GetStreamsTest extends TestCase
     /**
      * @test
      **/
-    public function testErrorHandling()
+    public function testBasicTest()
     {
-        $mockGetStreamsService = Mockery::mock(GetStreamsService::class);
-        $mockGetStreamsService->shouldReceive('execute')->andThrow(new \Exception('Service Unavailable', 503));
+        $response = $this->get('/');
 
-        $controller = new GetStreams($mockGetStreamsService);
+        $response->assertStatus(200);
+    }
 
-        $response = $controller->__invoke();
+    /**
+     * @test
+     */
+    public function get_streams_without_token()
+    {
+        $response = $this->get('/analytics/streams');
 
+        $response->assertStatus(500);
         $response->assertJson([
-            'error' => 'No se pueden devolver usuarios en este momento, inténtalo más tarde'
+            'error' => 'Unauthorized',
+            'status' => 500,
+            'message' => 'OAuth token is missing',
         ]);
-
-        $response->assertStatus(503);
     }
 }
