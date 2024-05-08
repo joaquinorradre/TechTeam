@@ -6,7 +6,7 @@ use App\Serializers\StreamsDataSerializer;
 use App\Services\GetStreamsService;
 use Illuminate\Http\Request;
 
-class GetStreamsController extends Controller
+class  GetStreamsController extends Controller
 {
     private GetStreamsService $getStreamsService;
     private StreamsDataSerializer $streamsSerializer;
@@ -21,10 +21,8 @@ class GetStreamsController extends Controller
      */
     public function __invoke(Request $request): \Illuminate\Http\JsonResponse
     {
-
         $streams = $this->getStreamsService->execute();
         $serializedStreams = $this->streamsSerializer->serialize($streams);
-
         return response()->json($serializedStreams, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
 }

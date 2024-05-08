@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Services;
-
+use Illuminate\Http\Response;
 class GetStreamsService
 {
     private StreamsDataManager $streamsDataManager;
@@ -13,10 +13,18 @@ class GetStreamsService
 
     public function execute()
     {
-        $streams = $this->streamsDataManager->getStreams();
-        $response = json_decode($streams, true);
+        $streamsResponse = $this->streamsDataManager->getStreams();
 
-        return($response['data']);
+        // Decodificar la respuesta JSON
+        $response = json_decode($streamsResponse, true);
+
+        // Verificar si la respuesta contiene datos
+        if ($response && isset($response['data'])) {
+            return $response['data'];
+        } else {
+            return [];
+        }
     }
+
 
 }

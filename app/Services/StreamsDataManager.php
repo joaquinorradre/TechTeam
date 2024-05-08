@@ -24,7 +24,7 @@ class StreamsDataManager
         try {
             $twitchToken = $this->twitchTokenService->getToken();
         } catch (Exception $exception) {
-            return response($exception->getMessage(), $exception->getCode());
+            throw new Exception($exception->getMessage(), $exception->getCode());
         }
 
         try {
@@ -33,13 +33,14 @@ class StreamsDataManager
             $statusCode = $result['status'];
 
             if ($statusCode == Response::HTTP_INTERNAL_SERVER_ERROR) {
-                return response()->json(['error' => 'No se pueden devolver streams en este momento, inténtalo más tarde'], Response::HTTP_SERVICE_UNAVAILABLE);
+                throw new Exception('No se pueden devolver streams en este momento, inténtalo más tarde', Response::HTTP_SERVICE_UNAVAILABLE);
             }
             return $streamsResponse;
         } catch (Exception $exception) {
-            return response($exception->getMessage(), $exception->getCode());
+            throw new Exception($exception->getMessage(), $exception->getCode());
         }
     }
+
 
 
 
