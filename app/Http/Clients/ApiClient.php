@@ -2,7 +2,6 @@
 
 namespace App\Http\Clients;
 
-
 class ApiClient
 {
     private const string CLIENT_ID = 'szp2ugo2j6edjt8ytdak5n2n3hjkq3';
