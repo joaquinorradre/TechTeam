@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Clients;
+namespace App\Http\Clients;
 
 
 class ApiClient
 {
-    private const CLIENT_ID = 'szp2ugo2j6edjt8ytdak5n2n3hjkq3';
-    private const CLIENT_SECRET = '07gk0kbwwzpuw2uqdzy1bjnsz9k32k';
+    private const string CLIENT_ID = 'szp2ugo2j6edjt8ytdak5n2n3hjkq3';
+    private const string CLIENT_SECRET = '07gk0kbwwzpuw2uqdzy1bjnsz9k32k';
     private string $url = 'https://id.twitch.tv/oauth2/token';
 
     public function getTokenFromAPI(): string
@@ -28,14 +28,14 @@ class ApiClient
         if(curl_errno($curlHeaders)) {
             echo 'Error en la petición cURL para obtener el token: ' . curl_error($curlHeaders);
             exit;
-
         }
 
         curl_close($curlHeaders);
+
         return $response;
     }
 
-    public function makeCurlCall($api_url, $token): string
+    public function makeCurlCall($api_url, $token): array
     {
         $curlHeaders = curl_init();
 
@@ -56,6 +56,6 @@ class ApiClient
         }
         curl_close($curlHeaders);
 
-        return $api_response;
+        return ['response' => $api_response, 'status' => $http_status];
     }
 }

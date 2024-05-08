@@ -6,7 +6,7 @@ use App\Services\UserDataManager;
 use App\Http\Requests\GetUsersRequest; // Importar el Form Request
 use Illuminate\Http\JsonResponse;
 
-class GetUsers extends Controller
+class GetUsersController extends Controller
 {
     private UserDataManager $userDataManager;
 
@@ -22,9 +22,7 @@ class GetUsers extends Controller
     {
         $userId = $request->input('id');
 
-        $url = "https://api.twitch.tv/helix/users?id=$userId";
-
-        $usersData = $this->userDataManager->getUserData($url);
+        $usersData = $this->userDataManager->getUserData($userId);
 
         $response = json_decode($usersData, true);
 

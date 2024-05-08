@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Clients\ApiClient;
+use App\Http\Clients\ApiClient;
 
 class NewTwitchApi
 {

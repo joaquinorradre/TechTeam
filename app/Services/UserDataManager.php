@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Clients\ApiClient;
-use App\Clients\DBClient;
+use App\Http\Clients\ApiClient;
+use App\Http\Clients\DBClient;
 
 class UserDataManager
 {
@@ -18,8 +18,9 @@ class UserDataManager
 
     }
 
-    public function getUserData($api_url): string
+    public function getUserData($userId): string
     {
+        $api_url = "https://api.twitch.tv/helix/users?id=$userId";
         $this->getTokenTwitch();
         return $this->apiClient->makeCurlCall($api_url,$this->token);
     }

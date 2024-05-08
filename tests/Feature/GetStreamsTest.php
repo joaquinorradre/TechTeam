@@ -2,14 +2,10 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Clients\ApiClient;
-use App\Services\StreamsDataManager;
-use App\Http\Controllers\GetStreams;
+use App\Http\Controllers\GetStreamsController;
 use App\Services\GetStreamsService;
 use Mockery;
 use Tests\TestCase;
-use Illuminate\Http\Request;
 
 class GetStreamsTest extends TestCase
 {
@@ -21,7 +17,7 @@ class GetStreamsTest extends TestCase
         $mockGetStreamsService = Mockery::mock(GetStreamsService::class);
         $mockGetStreamsService->shouldReceive('execute')->andThrow(new \Exception('Service Unavailable', 503));
 
-        $controller = new GetStreams($mockGetStreamsService);
+        $controller = new GetStreamsController($mockGetStreamsService);
 
         $response = $controller->__invoke();
 
