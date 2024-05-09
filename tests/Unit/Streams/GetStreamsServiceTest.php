@@ -1,11 +1,11 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Unit\Streams;
 
 use App\Services\GetStreamsService;
 use App\Services\StreamsDataManager;
-use PHPUnit\Framework\TestCase;
 use Mockery;
+use PHPUnit\Framework\TestCase;
 
 class GetStreamsServiceTest extends TestCase
 {

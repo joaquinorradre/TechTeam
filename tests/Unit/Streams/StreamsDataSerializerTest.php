@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Unit\Streams;
 
 use App\Serializers\StreamsDataSerializer;
 use PHPUnit\Framework\TestCase;

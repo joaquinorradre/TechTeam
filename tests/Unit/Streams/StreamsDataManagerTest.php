@@ -1,9 +1,9 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Unit\Streams;
 
-use App\Services\StreamsDataManager;
 use App\Http\Clients\ApiClient;
+use App\Services\StreamsDataManager;
 use App\Services\TwitchTokenService;
 use Exception;
 use Mockery;

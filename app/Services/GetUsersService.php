@@ -16,6 +16,10 @@ class GetUsersService
         $userData = $this->userDataManager->getUserData($userId);
         $response = json_decode($userData, true);
 
+        if ($response === null) {
+            return [];
+        }
+
         return($response['data']);
     }
 
