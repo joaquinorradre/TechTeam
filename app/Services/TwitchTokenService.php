@@ -19,6 +19,9 @@ class TwitchTokenService
         $this->apiClient = $apiClient;
     }
 
+    /**
+     * @throws Exception
+     */
     public function getToken(): string
     {
         $databaseTokenResponse = $this->dbClient->getTokenFromDatabase();
