@@ -48,8 +48,8 @@ class StreamsDataManagerTest extends TestCase
         try {
             $streamsDataManager->getStreams();
         } catch (\Exception $result) {
-            $this->assertEquals('Error al obtener el token de Twitch', $result->getMessage()); // Verifica el mensaje de la excepción
-            $this->assertEquals(500, $result->getCode()); // Verifica el código de la excepción
+            $this->assertEquals('Error al obtener el token de Twitch', $result->getMessage());
+            $this->assertEquals(500, $result->getCode());
             return;
         }
 
@@ -105,8 +105,8 @@ class StreamsDataManagerTest extends TestCase
         try {
             $streamsDataManager->getStreams();
         } catch (\Exception $result) {
-            $this->assertEquals(503, $result->getCode()); // Verifica el código de estado
-            $this->assertEquals('No se pueden devolver streams en este momento, inténtalo más tarde', $result->getMessage()); // Verifica el mensaje de la excepción
+            $this->assertEquals(503, $result->getCode());
+            $this->assertEquals('No se pueden devolver streams en este momento, inténtalo más tarde', $result->getMessage());
             return;
         }
 

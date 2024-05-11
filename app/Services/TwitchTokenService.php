@@ -34,7 +34,8 @@ class TwitchTokenService
             if (isset($result['access_token'])) {
                 $this->dbClient->addTokenToDatabase($result['access_token']);
                 return $result['access_token'];
-            } else {
+            }
+            else {
                 throw new Exception("No se pudo obtener el token de la API de Twitch");
             }
         } catch (Exception $exception) {

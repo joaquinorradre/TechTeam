@@ -82,7 +82,6 @@ class TwitchTokenServiceTest extends TestCase
             return;
         }
 
-        // Si no se lanza la excepción, entonces el test debería fallar
         $this->fail('Se esperaba que se lanzara una excepción.');
     }
 

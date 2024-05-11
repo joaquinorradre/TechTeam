@@ -26,7 +26,7 @@ class DBClient
 
     public function addTokenToDatabase(string $token): void
     {
-        $currentTime = now(); // Use Carbon instance for the current time
+        $currentTime = now();
 
         DB::table('Token')->insert([
             'token' => $token,
