@@ -26,21 +26,16 @@ class UserDataManagerTest extends TestCase
         $apiClientMock
             ->shouldReceive('makeCurlCall')
             ->once()
-            ->with('https://api.twitch.tv/helix/users?id=123', 'access_token')
-            ->andReturn(['response' => json_encode(['data' => [['user_id' => 123, 'username' => 'example_user']]]), 'status' => 200]);
+            ->with('https://api.twitch.tv/helix/users?id=example_user_id', 'access_token')
+            ->andReturn(['response' => json_encode(['data' => [['user_id' => 'example_user_id', 'username' => 'example_user']]]), 'status' => 200]);
 
         $userDataManager = new UserDataManager($apiClientMock, $dbClientMock, $twitchTokenServiceMock);
 
-        $response = $userDataManager->getUserData(123);
+        $userId = 'example_user_id';
+        $response = $userDataManager->getUserData($userId);
 
-        // Verificar que el objeto devuelto es una instancia de Response
-        $this->assertInstanceOf(Response::class, $response);
-
-        // Verificar que la respuesta no está vacía
-        $this->assertNotEmpty($response->getContent());
-
-        // Verificar el código de estado de la respuesta
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertIsString($response);
+        $this->assertNotEmpty($response);
     }
 
     public function testGetUserDataWhenGetTokenFails()

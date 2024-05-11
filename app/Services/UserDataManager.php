@@ -19,9 +19,10 @@ class UserDataManager
         $this->apiClient = $apiClient;
         $this->dbClient = $dbClient;
         $this->twitchTokenService = $twitchTokenService;
+
     }
 
-    public function getUserData($userId): Response
+    public function getUserData($userId): string
     {
         try {
             $twitchToken = $this->twitchTokenService->getToken();
@@ -38,8 +39,7 @@ class UserDataManager
             if ($statusCode == Response::HTTP_INTERNAL_SERVER_ERROR) {
                 throw new Exception('No se pueden devolver usuarios en este momento, inténtalo más tarde', Response::HTTP_SERVICE_UNAVAILABLE);
             }
-
-            return response($streamsResponse, $statusCode);
+            return $streamsResponse;
         } catch (Exception $exception) {
             throw new Exception($exception->getMessage(), $exception->getCode());
         }
