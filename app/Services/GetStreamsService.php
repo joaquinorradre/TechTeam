@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Services;
-use Illuminate\Http\Response;
+use Exception;
+
 class GetStreamsService
 {
     private StreamsDataManager $streamsDataManager;
@@ -11,14 +12,15 @@ class GetStreamsService
         $this->streamsDataManager = $streamsDataManager;
     }
 
+    /**
+     * @throws Exception
+     */
     public function execute()
     {
         $streamsResponse = $this->streamsDataManager->getStreams();
 
-        // Decodificar la respuesta JSON
         $response = json_decode($streamsResponse, true);
 
-        // Verificar si la respuesta contiene datos
         if ($response && isset($response['data'])) {
             return $response['data'];
         } else {

@@ -19,6 +19,9 @@ class StreamsDataManager
         $this->twitchTokenService = $twitchTokenService;
     }
 
+    /**
+     * @throws Exception
+     */
     public function getStreams(): string
     {
         try {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Clients;
 
+use Exception;
 use Illuminate\Support\Facades\DB;
 
 class DBClient
@@ -9,10 +10,9 @@ class DBClient
     public static function getConnection()
     {
         try {
-            $pdo = DB::connection()->getPdo();
-            return $pdo;
-        } catch (\Exception $e) {
-            die("Error de conexión: " . $e->getMessage());
+            return DB::connection()->getPdo();
+        } catch (Exception $exception) {
+            die("Error de conexión: " . $$exception->getMessage());
         }
     }
 
@@ -22,7 +22,6 @@ class DBClient
 
         return $token ? $token : null;
     }
-
 
     public function addTokenToDatabase(string $token): void
     {
