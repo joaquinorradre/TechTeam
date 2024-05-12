@@ -32,5 +32,4 @@ class GetUsersController extends Controller
 
         return new JsonResponse($serializedUserData, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
-    
 }

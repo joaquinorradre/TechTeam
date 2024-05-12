@@ -27,5 +27,4 @@ class GetStreamsController extends Controller
 
         return new JsonResponse($serializedStreams, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
-
 }
