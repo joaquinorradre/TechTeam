@@ -18,6 +18,7 @@ grumphp:
               - 'rama_miguel'
               - 'rama_joaquin'
               - 'rama_helen'
+              - 'rama_action'
         phpcs:
             standard: [PSR12]
             whitelist_patterns:
