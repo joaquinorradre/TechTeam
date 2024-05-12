@@ -8,7 +8,10 @@ use PHPUnit\Framework\TestCase;
 
 class UserDataSerializerTest extends TestCase
 {
-    public function testSerialize()
+    /**
+     * @test
+     */
+    public function serializationWithValidData()
     {
         $serializer = new UserDataSerializer();
 
@@ -20,7 +23,6 @@ class UserDataSerializerTest extends TestCase
 
         $this->assertCount(1, $serializedUsers);
         $this->assertArrayHasKey('id', $serializedUsers[0]);
-
         $this->assertEquals('display_name', $serializedUsers[0]['display_name']);
         $this->assertEquals('id', $serializedUsers[0]['id']);
         $this->assertEquals('broadcaster_type', $serializedUsers[0]['broadcaster_type']);

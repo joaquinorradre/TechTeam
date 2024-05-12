@@ -7,7 +7,10 @@ use PHPUnit\Framework\TestCase;
 
 class StreamsDataSerializerTest extends TestCase
 {
-    public function testSerialize()
+    /**
+     * @test
+     */
+    public function serializationWithValidData()
     {
         $serializer = new StreamsDataSerializer();
 

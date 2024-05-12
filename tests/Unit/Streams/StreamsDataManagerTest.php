@@ -11,7 +11,10 @@ use PHPUnit\Framework\TestCase;
 
 class StreamsDataManagerTest extends TestCase
 {
-    public function testGetStreamsWhenTwitchTokenIsRetrievedSuccessfully()
+    /**
+     * @test
+     */
+    public function givenATokenRetrievalSuccessfulDoGetStreams()
     {
         $apiClientMock = Mockery::mock(ApiClient::class);
         $twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
@@ -34,7 +37,10 @@ class StreamsDataManagerTest extends TestCase
         $this->assertNotEmpty($result);
     }
 
-    public function testGetStreamsWhenTwitchTokenRetrievalFails()
+    /**
+     * @test
+     */
+    public function givenATokenRetrievalFailureDoGetStreams()
     {
         $apiClientMock = Mockery::mock(ApiClient::class);
         $twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
@@ -47,7 +53,8 @@ class StreamsDataManagerTest extends TestCase
 
         try {
             $streamsDataManager->getStreams();
-        } catch (\Exception $result) {
+        }
+        catch (\Exception $result) {
             $this->assertEquals('Error al obtener el token de Twitch', $result->getMessage());
             $this->assertEquals(500, $result->getCode());
             return;
@@ -56,10 +63,10 @@ class StreamsDataManagerTest extends TestCase
         $this->fail('Se esperaba que se lanzara una excepción.');
     }
 
-
-
-
-    public function testGetStreamsWhenApiClientFails()
+    /**
+     * @test
+     */
+    public function givenAnApiClientErrorDoGetStreams()
     {
         $apiClientMock = Mockery::mock(ApiClient::class);
         $twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
@@ -76,17 +83,20 @@ class StreamsDataManagerTest extends TestCase
 
         try {
             $streamsDataManager->getStreams();
-        } catch (\Exception $result) {
-            $this->assertEquals('Error al llamar a la API de Twitch', $result->getMessage()); // Verifica el mensaje de la excepción
-            $this->assertEquals(500, $result->getCode()); // Verifica el código de la excepción
+        }
+        catch (\Exception $result) {
+            $this->assertEquals('Error al llamar a la API de Twitch', $result->getMessage());
+            $this->assertEquals(500, $result->getCode());
             return;
         }
 
         $this->fail('Se esperaba que se lanzara una excepción.');
     }
 
-
-    public function testGetStreamsWhenApiClientReturnsInternalServerError()
+    /**
+     * @test
+     */
+    public function givenAnApiClientReturnWithErrorDoGetStreams()
     {
         $apiClientMock = Mockery::mock(ApiClient::class);
         $twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
@@ -104,7 +114,8 @@ class StreamsDataManagerTest extends TestCase
 
         try {
             $streamsDataManager->getStreams();
-        } catch (\Exception $result) {
+        }
+        catch (\Exception $result) {
             $this->assertEquals(503, $result->getCode());
             $this->assertEquals('No se pueden devolver streams en este momento, inténtalo más tarde', $result->getMessage());
             return;
@@ -112,7 +123,5 @@ class StreamsDataManagerTest extends TestCase
 
         $this->fail('Se esperaba que se lanzara una excepción.');
     }
-
-
 }
 

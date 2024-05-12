@@ -9,7 +9,10 @@ use Mockery;
 use Exception;
 class TwitchTokenServiceTest extends TestCase
 {
-    public function testGetTokenFromDatabase()
+    /**
+     * @test
+     */
+    public function givenADatabaseSuccesfulAccesReturnToken()
     {
         $dbClientMock = Mockery::mock(DBClient::class);
         $apiClientMock = Mockery::mock(ApiClient::class);
@@ -26,7 +29,10 @@ class TwitchTokenServiceTest extends TestCase
         $this->assertEquals('mocked_token', $result);
     }
 
-    public function testGetTokenFromApiAndSaveToDatabase()
+    /**
+     * @test
+     */
+    public function givenADatabaseFailureGetTokenFromApiAndSaveToDatabase()
     {
         $dbClientMock = Mockery::mock(DBClient::class);
         $apiClientMock = Mockery::mock(ApiClient::class);
@@ -50,14 +56,18 @@ class TwitchTokenServiceTest extends TestCase
 
         try {
             $result = $twitchTokenService->getToken();
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
             $this->fail('Se esperaba que no se lanzara una excepción.');
         }
 
         $this->assertEquals('api_token', $result);
     }
 
-    public function testHandleApiTokenException()
+    /**
+     * @test
+     */
+    public function givenAnApiTokenErrorReturnException()
     {
         $dbClientMock = Mockery::mock(DBClient::class);
         $apiClientMock = Mockery::mock(ApiClient::class);
@@ -76,7 +86,8 @@ class TwitchTokenServiceTest extends TestCase
 
         try {
             $result = $twitchTokenService->getToken();
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
             $this->assertInstanceOf(\Exception::class, $e);
             $this->assertEquals('No se puede establecer conexión con Twitch en este momento', $e->getMessage());
             return;
@@ -84,5 +95,4 @@ class TwitchTokenServiceTest extends TestCase
 
         $this->fail('Se esperaba que se lanzara una excepción.');
     }
-
 }

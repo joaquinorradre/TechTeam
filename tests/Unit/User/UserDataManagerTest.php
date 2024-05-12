@@ -13,7 +13,10 @@ use PHPUnit\Framework\TestCase;
 
 class UserDataManagerTest extends TestCase
 {
-    public function testGetUserDataWhenGetTokenIsCorrect()
+    /**
+     * @test
+     */
+    public function givenACorrectTokenDoGetUserData()
     {
         $apiClientMock = Mockery::mock(ApiClient::class);
         $dbClientMock = Mockery::mock(DBClient::class);
@@ -38,7 +41,10 @@ class UserDataManagerTest extends TestCase
         $this->assertNotEmpty($response);
     }
 
-    public function testGetUserDataWhenGetTokenFails()
+    /**
+     * @test
+     */
+    public function givenAFailedTokenDoGetUserData()
     {
         $apiClientMock = $this->createMock(ApiClient::class);
         $dbClientMock = $this->createMock(DBClient::class);
@@ -64,7 +70,10 @@ class UserDataManagerTest extends TestCase
         }
     }
 
-    public function testGetUserDataWhenApiClientFails()
+    /**
+     * @test
+     */
+    public function givenAnApiClientFailureDoGetUserData()
     {
         $apiClientMock = Mockery::mock(ApiClient::class);
         $dbClientMock = Mockery::mock(DBClient::class);
@@ -82,7 +91,8 @@ class UserDataManagerTest extends TestCase
 
         try {
             $userDataManager->getUserData(123);
-        } catch (\Exception $result) {
+        }
+        catch (\Exception $result) {
             $this->assertEquals('Error al llamar a la API de Twitch', $result->getMessage());
             $this->assertEquals(500, $result->getCode());
             return;
@@ -91,7 +101,10 @@ class UserDataManagerTest extends TestCase
         $this->fail('Se esperaba que se lanzara una excepción.');
     }
 
-    public function testGetUserDataWhenApiClientReturnsInternalServerError()
+    /**
+     * @test
+     */
+    public function givenAnApiClientReturnWithInternalServerErrorDoGetUserData()
     {
         $apiClientMock = Mockery::mock(ApiClient::class);
         $dbClientMock = Mockery::mock(DBClient::class);
@@ -110,7 +123,8 @@ class UserDataManagerTest extends TestCase
 
         try {
             $userDataManager->getUserData(123);
-        } catch (\Exception $result) {
+        }
+        catch (\Exception $result) {
             $this->assertEquals(503, $result->getCode());
             $this->assertEquals('No se pueden devolver usuarios en este momento, inténtalo más tarde', $result->getMessage());
             return;

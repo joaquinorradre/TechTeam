@@ -9,7 +9,10 @@ use PHPUnit\Framework\TestCase;
 
 class GetStreamsServiceTest extends TestCase
 {
-    public function testExecuteMethodWithValidResponseFromTwitch()
+    /**
+     * @test
+     */
+    public function givenAValidResponseFromTwitchDoExecuteMethod()
     {
         $streamsDataManagerMock = Mockery::mock(StreamsDataManager::class);
 
@@ -28,7 +31,10 @@ class GetStreamsServiceTest extends TestCase
         $this->assertEquals('User 1', $result[0]['user_name']);
     }
 
-    public function testExecuteMethodWithNullResponseFromTwitch()
+    /**
+     * @test
+     */
+    public function givenANullResponseFromTwitchDoExecuteMethod()
     {
         $streamsDataManagerMock = Mockery::mock(StreamsDataManager::class);
 
@@ -44,5 +50,4 @@ class GetStreamsServiceTest extends TestCase
         $this->assertIsArray($result);
         $this->assertEquals(0, count($result));
     }
-
 }

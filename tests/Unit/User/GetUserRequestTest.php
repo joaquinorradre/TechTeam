@@ -6,18 +6,22 @@ use App\Http\Requests\GetUsersRequest;
 use Illuminate\Foundation\Testing\TestCase;
 use Illuminate\Support\Facades\Validator;
 
-class GetUserRequestText extends TestCase
+class GetUserRequestTest extends TestCase
 {
-    /** @test */
-    public function it_authorizes_the_request()
+    /**
+     * @test
+     */
+    public function givenARequestReturnTrueAuthorization()
     {
         $request = new GetUsersRequest();
 
         $this->assertTrue($request->authorize());
     }
 
-    /** @test */
-    public function it_validates_required_numeric_id()
+    /**
+     * @test
+     */
+    public function givenAnEmptyIdReturnError()
     {
         $request = new GetUsersRequest();
 
@@ -27,8 +31,10 @@ class GetUserRequestText extends TestCase
         $this->assertTrue($validator->errors()->has('id'));
     }
 
-    /** @test */
-    public function it_validates_numeric_id()
+    /**
+     * @test
+     */
+    public function givenAnIdWithInvalidFormatReturnError()
     {
         $request = new GetUsersRequest();
 
@@ -38,8 +44,10 @@ class GetUserRequestText extends TestCase
         $this->assertTrue($validator->errors()->has('id'));
     }
 
-    /** @test */
-    public function it_passes_validation_with_valid_id()
+    /**
+     * @test
+     */
+    public function givenAValidIdReturnValue()
     {
         $request = new GetUsersRequest();
 

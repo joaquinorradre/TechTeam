@@ -9,12 +9,16 @@ use PHPUnit\Framework\TestCase;
 
 class GetUsersServiceTest extends TestCase
 {
-    public function testGetUserwithCorrectResponse()
+    /**
+     * @test
+     */
+    public function givenACorrectResponseUserIsGiven()
     {
         $userDataManagerMock = Mockery::mock(UserDataManager::class);
 
         $userId = 29;
         $expectedResponse = json_encode(['data' => ['user_id' => 29, 'username' => 'example_user']]);
+
         $userDataManagerMock
             ->shouldReceive('getUserData')
             ->once()
@@ -30,11 +34,15 @@ class GetUsersServiceTest extends TestCase
         $this->assertEquals('example_user', $result['username']);
     }
 
-    public function testGetUserWithoutCorrectResponse()
+    /**
+     * @test
+     */
+    public function givenAnIncorrectResponseReturnError()
     {
         $userDataManagerMock = Mockery::mock(UserDataManager::class);
 
         $userId = 45;
+
         $userDataManagerMock
             ->shouldReceive('getUserData')
             ->once()
