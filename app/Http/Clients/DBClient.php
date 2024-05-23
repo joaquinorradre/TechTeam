@@ -43,25 +43,6 @@ class DBClient
             ->select('User.username', 'user_follow.streamerId')
             ->get();
 
-        $result = [];
-
-        // Agrupar los streamers por nombre de usuario
-        foreach ($users as $user) {
-            if (!isset($result[$user->username])) {
-                $result[$user->username] = [];
-            }
-            $result[$user->username][] = $user->streamerId;
-        }
-
-        // Formatear el resultado final
-        $finalResult = [];
-        foreach ($result as $username => $streamers) {
-            $finalResult[] = [
-                'username' => $username,
-                'followedStreamers' => $streamers
-            ];
-        }
-
-        return $finalResult;
+        return $users->toArray();
     }
 }
