@@ -1,30 +1,33 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Services\UserListDataManager;
+use App\Http\Clients\DBClient;
 use Illuminate\Http\JsonResponse;
 
 class GetUsersListController extends Controller
 {
-    private UserListDataManager $userListDataManager;
+    private DBClient $dbClient;
 
-    public function __construct(UserListDataManager $userListDataManager)
+    public function __construct(DBClient $dbClient)
     {
-        $this->userListDataManager = $userListDataManager;
+        $this->dbClient = $dbClient;
     }
 
-    /**
+    /**s
      * Handle the incoming request.
      */
     public function __invoke(): JsonResponse
     {
         try {
-            // Obtener los datos de usuarios y streamers
-            $userData = $this->userListDataManager->getUserData();
+            // Obtener los datos de usuarios y streamers utilizando el DBClient
+            $userData = $this->dbClient->getUsersWithFollowedStreamers();
 
+            // Retornar la respuesta exitosa con los datos de los usuarios y los streamers seguidos
             return new JsonResponse($userData, 200);
-        }
-        catch (Exception $exception) {
+        } catch (Exception $exception) {
+            // Retornar una respuesta de error si ocurre alguna excepción
             return new JsonResponse(['error' => $exception->getMessage()], 500);
         }
     }
