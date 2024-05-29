@@ -119,4 +119,24 @@ class DBClient
             })
             ->get();
     }
+
+    public function searchUser(string $username): bool
+    {
+        $result = DB::table('User')
+            ->select('User.username')
+            ->where('User.username', $username)
+            ->get();
+
+        return $result->isNotEmpty();
+    }
+
+    public function createUser(string $username, string $password): bool
+    {
+        $result = DB::table('user')->insert([
+            'username' => $username,
+            'password' => $password,
+        ]);
+
+        return $result;
+    }
 }
