@@ -45,7 +45,7 @@ class TopsOfTheTopsDataManager
             $gamesResult = $this->apiClient->makeCurlCall(self::GAMES_TWITCH_URL, $accessToken);
             $gamesResponse = $gamesResult['response'];
             $statusCode = $gamesResult['status'];
-
+            $gamesResponse = json_decode($gamesResponse, true);
             if ($gamesResponse) {
                 $this->insertGames($gamesResponse);
                 $this->fetchAndInsertVideos($gamesResponse, $accessToken);
@@ -73,6 +73,7 @@ class TopsOfTheTopsDataManager
         $gamesResult = $this->apiClient->makeCurlCall(self::GAMES_TWITCH_URL, $accessToken);
         $gamesResponse = $gamesResult['response'];
         $statusCode = $gamesResult['status'];
+        $gamesResponse = json_decode($gamesResponse, true);
         if (isset($gamesResponse['data'])) {
             $this->dbClient->deleteObsoleteGames($gamesResponse);
             $this->updateGames($gamesResponse, $since);
@@ -114,6 +115,7 @@ class TopsOfTheTopsDataManager
             $videosUrl = "https://api.twitch.tv/helix/videos?game_id={$game['id']}&sort=views&first=40";
             $videosResult = $this->apiClient->makeCurlCall($videosUrl, $accessToken);
             $videosResponse = $videosResult['response'];
+            $videosResponse = json_decode($videosResponse,true);
             $this->insertVideos($videosResponse, $game['id']);
         }
     }
@@ -140,7 +142,7 @@ class TopsOfTheTopsDataManager
 
                 $videosResult = $this->apiClient->makeCurlCall($videosUrl, $accessToken);
                 $videosResponse = $videosResult['response'];
-
+                $videosResponse = json_decode($videosResponse, true);
                 if ($videosResponse) {
                     self::insertVideos($videosResponse, $game['id']);
                 }else{
@@ -155,6 +157,9 @@ class TopsOfTheTopsDataManager
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public static function insertVideos($videosResponse, $idGame): void
     {
         try {
