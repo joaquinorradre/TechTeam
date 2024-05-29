@@ -2,8 +2,7 @@
 
 namespace App\Services;
 
-use App\Services\TopsOfTheTopsDataManager;
-use Illuminate\Http\Request;
+use Exception;
 
 class GetTopOfTheTopsService
 {
@@ -14,15 +13,16 @@ class GetTopOfTheTopsService
         $this->topsOfTheTopsDataManager = $topsOfTheTopsDataManager;
     }
 
-    public function execute(Request $request, $since)
+    /**
+     * @throws Exception
+     */
+    public function execute($since)
     {
-        $games = $this->topsOfTheTopsDataManager->fetchGames();
-        $gameCount = count($games);
-
+        $gameCount = count($this->topsOfTheTopsDataManager->fetchGames());
         if ($gameCount == 0) {
             return $this->topsOfTheTopsDataManager->updateGamesData();
         } elseif ($gameCount > 0) {
-            return $this->topsOfTheTopsDataManager->updateExistingGamesData($request, $since);
+            return $this->topsOfTheTopsDataManager->updateExistingGamesData($since);
         }
     }
 }

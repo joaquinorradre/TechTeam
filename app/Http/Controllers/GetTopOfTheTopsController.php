@@ -18,12 +18,15 @@ class GetTopOfTheTopsController extends Controller
         $this->topsOfTheTopsDataSerializer = $topsOfTheTopsDataSerializer;
     }
 
+    /**
+     * @throws \Exception
+     */
     public function __invoke(Request $request): JsonResponse
     {
         $since = $request->input('since', 600);
-        $topOfTheTops = $this->getTopOfTheTopsService->execute($request, $since);
-        $serializedTopOfTheTops = $this->topsOfTheTopsDataSerializer->serialize($topOfTheTops);
+        $topOfTheTops = $this->getTopOfTheTopsService->execute($since);
+        //$serializedTopOfTheTops = $this->topsOfTheTopsDataSerializer->serialize($topOfTheTops);
 
-        return new JsonResponse($serializedTopOfTheTops, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        return new JsonResponse($topOfTheTops, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
 }
