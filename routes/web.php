@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\GetStreamsController;
+use App\Http\Controllers\CreateUserController;
 use App\Http\Controllers\GetTimelineController;
 use App\Http\Controllers\GetTopOfTheTopsController;
 use App\Http\Controllers\GetUsersController;
@@ -15,3 +16,5 @@ Route::get('/', function () {
 Route::get('/analytics/streams', GetStreamsController::class);
 //Route::get('/analytics/users', GetUsersController::class);
 Route::get('/analytics/topsofthetops', GetTopOfTheTopsController::class);
+Route::post('/analytics/users', CreateUserController::class);
+
