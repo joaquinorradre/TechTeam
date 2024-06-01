@@ -11,27 +11,37 @@ use PHPUnit\Framework\TestCase;
 
 class StreamsDataManagerTest extends TestCase
 {
+    private $apiClientMock;
+    private $twitchTokenServiceMock;
+    private $streamsDataManager;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->apiClientMock = Mockery::mock(ApiClient::class);
+        $this->twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
+
+        $this->streamsDataManager = new StreamsDataManager($this->apiClientMock, $this->twitchTokenServiceMock);
+    }
+
     /**
      * @test
      */
-    public function givenATokenRetrievalSuccessfulDoGetStreams()
+    public function it_returns_streams_data_when_token_retrieval_is_successful()
     {
-        $apiClientMock = Mockery::mock(ApiClient::class);
-        $twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
-
-        $twitchTokenServiceMock
+        $this->twitchTokenServiceMock
             ->shouldReceive('getToken')
+            ->once()
             ->andReturn('access_token');
 
-        $apiClientMock
+        $this->apiClientMock
             ->shouldReceive('makeCurlCall')
             ->once()
             ->with('https://api.twitch.tv/helix/streams', 'access_token')
             ->andReturn(['response' => json_encode(['data' => [['title' => 'Stream 1', 'user_name' => 'User 1']]]), 'status' => 200]);
 
-        $streamsDataManager = new StreamsDataManager($apiClientMock, $twitchTokenServiceMock);
-
-        $result = $streamsDataManager->getStreams();
+        $result = $this->streamsDataManager->getStreams();
 
         $this->assertIsString($result);
         $this->assertNotEmpty($result);
@@ -40,88 +50,67 @@ class StreamsDataManagerTest extends TestCase
     /**
      * @test
      */
-    public function givenATokenRetrievalFailureDoGetStreams()
+    public function it_throws_exception_when_token_retrieval_fails()
     {
-        $apiClientMock = Mockery::mock(ApiClient::class);
-        $twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
-
-        $twitchTokenServiceMock
+        $this->twitchTokenServiceMock
             ->shouldReceive('getToken')
+            ->once()
             ->andThrow(new Exception('Error al obtener el token de Twitch', 500));
 
-        $streamsDataManager = new StreamsDataManager($apiClientMock, $twitchTokenServiceMock);
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Error al obtener el token de Twitch');
+        $this->expectExceptionCode(500);
 
-        try {
-            $streamsDataManager->getStreams();
-        }
-        catch (\Exception $result) {
-            $this->assertEquals('Error al obtener el token de Twitch', $result->getMessage());
-            $this->assertEquals(500, $result->getCode());
-            return;
-        }
-
-        $this->fail('Se esperaba que se lanzara una excepción.');
+        $this->streamsDataManager->getStreams();
     }
 
     /**
      * @test
      */
-    public function givenAnApiClientErrorDoGetStreams()
+    public function it_throws_exception_when_api_call_fails()
     {
-        $apiClientMock = Mockery::mock(ApiClient::class);
-        $twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
-
-        $twitchTokenServiceMock
+        $this->twitchTokenServiceMock
             ->shouldReceive('getToken')
+            ->once()
             ->andReturn('access_token');
 
-        $apiClientMock
+        $this->apiClientMock
             ->shouldReceive('makeCurlCall')
+            ->once()
             ->andThrow(new Exception('Error al llamar a la API de Twitch', 500));
 
-        $streamsDataManager = new StreamsDataManager($apiClientMock, $twitchTokenServiceMock);
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Error al llamar a la API de Twitch');
+        $this->expectExceptionCode(500);
 
-        try {
-            $streamsDataManager->getStreams();
-        }
-        catch (\Exception $result) {
-            $this->assertEquals('Error al llamar a la API de Twitch', $result->getMessage());
-            $this->assertEquals(500, $result->getCode());
-            return;
-        }
-
-        $this->fail('Se esperaba que se lanzara una excepción.');
+        $this->streamsDataManager->getStreams();
     }
 
     /**
      * @test
      */
-    public function givenAnApiClientReturnWithErrorDoGetStreams()
+    public function it_throws_exception_when_api_returns_error_status()
     {
-        $apiClientMock = Mockery::mock(ApiClient::class);
-        $twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
-
-        $twitchTokenServiceMock
+        $this->twitchTokenServiceMock
             ->shouldReceive('getToken')
+            ->once()
             ->andReturn('access_token');
 
-        $apiClientMock
+        $this->apiClientMock
             ->shouldReceive('makeCurlCall')
             ->once()
             ->andReturn(['response' => null, 'status' => 500]);
 
-        $streamsDataManager = new StreamsDataManager($apiClientMock, $twitchTokenServiceMock);
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('No se pueden devolver streams en este momento, inténtalo más tarde');
+        $this->expectExceptionCode(503);
 
-        try {
-            $streamsDataManager->getStreams();
-        }
-        catch (\Exception $result) {
-            $this->assertEquals(503, $result->getCode());
-            $this->assertEquals('No se pueden devolver streams en este momento, inténtalo más tarde', $result->getMessage());
-            return;
-        }
+        $this->streamsDataManager->getStreams();
+    }
 
-        $this->fail('Se esperaba que se lanzara una excepción.');
+    protected function tearDown(): void
+    {
+        Mockery::close();
+        parent::tearDown();
     }
 }
-

@@ -25,7 +25,7 @@ class TwitchTokenService
     {
         $databaseTokenResponse = $this->dbClient->getTokenFromDatabase();
 
-        if ($databaseTokenResponse != null) {
+        if (!is_null($databaseTokenResponse)) {
             return $databaseTokenResponse;
         }
 
@@ -37,11 +37,11 @@ class TwitchTokenService
                 $this->dbClient->addTokenToDatabase($result['access_token']);
                 return $result['access_token'];
             }
-            else {
-                throw new Exception("No se pudo obtener el token de la API de Twitch");
-            }
+
+            throw new Exception("No se pudo obtener el token de la API de Twitch");
+
         } catch (Exception $exception) {
-            throw new Exception('No se puede establecer conexión con Twitch en este momento', Response::HTTP_SERVICE_UNAVAILABLE);
+            throw new Exception('No se puede establecer conexión con Twitch en este momento', Response::HTTP_SERVICE_UNAVAILABLE, $exception);
         }
     }
 }

@@ -27,5 +27,18 @@ class StreamsDataSerializerTest extends TestCase
         $this->assertEquals('Stream 1', $serializedStreams[0]['title']);
         $this->assertEquals('User 1', $serializedStreams[0]['user_name']);
     }
-}
 
+    /**
+     * @test
+     */
+    public function serializationWithEmptyData()
+    {
+        $serializer = new StreamsDataSerializer();
+
+        $streams = [];
+
+        $serializedStreams = $serializer->serialize($streams);
+
+        $this->assertEmpty($serializedStreams);
+    }
+}
