@@ -42,6 +42,7 @@ class DBClient
             ->get();
 
         return $users->toArray();
+    }
         
     public function fetchGames()
     {

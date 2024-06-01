@@ -13,12 +13,14 @@ class UsersFollowDataManager
     private ApiClient $apiClient;
     private TwitchTokenService $twitchTokenService;
     private DBClient $dbClient;
+    private UserDataSerializer $serializer;
 
-    public function __construct(ApiClient $apiClient, TwitchTokenService $twitchTokenService, DBClient $dbClient)
+    public function __construct(ApiClient $apiClient, TwitchTokenService $twitchTokenService, DBClient $dbClient, UserDataSerializer $serializer)
     {
         $this->apiClient = $apiClient;
         $this->twitchTokenService = $twitchTokenService;
         $this->dbClient = $dbClient;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -26,16 +28,14 @@ class UsersFollowDataManager
      */
     public function getUserData(): array
     {
-
         try {
             $twitchToken = $this->twitchTokenService->getToken();
         } catch (Exception $exception) {
             throw new Exception($exception->getMessage(), $exception->getCode());
         }
 
-        try{
+        try {
             $usersWithFollowedStreamers = $this->dbClient->getUsersWithFollowedStreamers();
-
             $result = [];
 
             foreach ($usersWithFollowedStreamers as $userWithFollowedStreamers) {
@@ -54,10 +54,9 @@ class UsersFollowDataManager
                     $result[$userWithFollowedStreamers->username][] = $streamerData[0]['login'];
                 }
             }
-            return UserDataSerializer::serialize($result);
+            return $this->serializer->serialize($result);
 
-        }
-        catch (Exception $exception) {
+        } catch (Exception $exception) {
             throw new Exception($exception->getMessage(), $exception->getCode());
         }
     }
