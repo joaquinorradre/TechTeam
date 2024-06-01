@@ -23,9 +23,9 @@ class GetUsersFollowController extends Controller
     public function __invoke(): JsonResponse
     {
         try {
-            $usersWithFollowedStreamersData = $this->userListDataManager->getUserData();
+            $usersFollowedData = $this->userListDataManager->getUserData();
             return new JsonResponse(
-                $usersWithFollowedStreamersData,
+                $usersFollowedData,
                 200,
                 [],
                 JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE
