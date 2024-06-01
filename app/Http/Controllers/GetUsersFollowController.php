@@ -24,11 +24,14 @@ class GetUsersFollowController extends Controller
     {
         try {
             $usersWithFollowedStreamersData = $this->userListDataManager->getUserData();
-            return new JsonResponse($usersWithFollowedStreamersData, 200, [],
-                JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+            return new JsonResponse(
+                $usersWithFollowedStreamersData,
+                200,
+                [],
+                JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE
+            );
         } catch (Exception $exception) {
             return new JsonResponse(['error' => $exception->getMessage()], 500);
         }
     }
-
 }
