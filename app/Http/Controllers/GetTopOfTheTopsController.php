@@ -12,7 +12,8 @@ class GetTopOfTheTopsController extends Controller
     private GetTopOfTheTopsService $getTopOfTheTopsService;
     private TopsOfTheTopsDataSerializer $topsOfTheTopsDataSerializer;
 
-    public function __construct(GetTopOfTheTopsService $getTopOfTheTopsService, TopsOfTheTopsDataSerializer $topsOfTheTopsDataSerializer)
+    public function __construct(GetTopOfTheTopsService $getTopOfTheTopsService,
+                                TopsOfTheTopsDataSerializer $topsOfTheTopsDataSerializer)
     {
         $this->getTopOfTheTopsService = $getTopOfTheTopsService;
         $this->topsOfTheTopsDataSerializer = $topsOfTheTopsDataSerializer;
