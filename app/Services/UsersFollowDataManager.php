@@ -36,6 +36,10 @@ class UsersFollowDataManager
 
         try {
             $usersWithFollowedStreamers = $this->dbClient->getUsersWithFollowedStreamers();
+            if (empty($usersWithFollowedStreamers)) {
+                throw new Exception('500 Internal Server Error : Error del servidor al obtener la lista de usuarios', 500);
+            }
+
             $result = [];
 
             foreach ($usersWithFollowedStreamers as $userWithFollowedStreamers) {

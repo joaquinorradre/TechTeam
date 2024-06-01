@@ -76,6 +76,34 @@ class UsersFollowDataManagerTest extends TestCase
         $this->assertEquals(['streamer2'], $response[1]['followedStreamers']);
     }
 
+    /**
+     * @test
+     */
+    public function givenEmptyUsersListShouldThrowInternalServerError()
+    {
+        $apiClientMock = Mockery::mock(ApiClient::class);
+        $dbClientMock = Mockery::mock(DBClient::class);
+        $twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
+        $serializerMock = Mockery::mock(UserDataSerializer::class);
+
+        $twitchTokenServiceMock
+            ->shouldReceive('getToken')
+            ->andReturn('access_token');
+
+        $dbClientMock
+            ->shouldReceive('getUsersWithFollowedStreamers')
+            ->once()
+            ->andReturn([]);
+
+        $userDataManager = new UsersFollowDataManager($apiClientMock, $twitchTokenServiceMock, $dbClientMock, $serializerMock);
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('500 Internal Server Error : Error del servidor al obtener la lista de usuarios');
+        $this->expectExceptionCode(500);
+
+        $userDataManager->getUserData();
+    }
+
     protected function tearDown(): void
     {
         Mockery::close();
