@@ -18,7 +18,7 @@ class GetUsersControllerTest extends TestCase
     /**
      * @test
      */
-    public function getUsersControllerIntegrationTest()
+    public function getUsers()
     {
         $request = GetUsersRequest::create('/analytics/users', 'GET', ['id' => 'valor']);
 

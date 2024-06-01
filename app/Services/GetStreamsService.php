@@ -27,5 +27,4 @@ class GetStreamsService
             return [];
         }
     }
-
 }

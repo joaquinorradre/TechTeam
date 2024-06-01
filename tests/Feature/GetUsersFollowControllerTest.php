@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Feature;
 
 use App\Http\Clients\ApiClient;
 use App\Http\Clients\DBClient;
@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 use PHPUnit\Framework\TestCase;
 use Mockery;
 
-class GetStreamsControllerTest extends TestCase
+class GetUsersFollowControllerTest extends TestCase
 {
     /**
      * @test
