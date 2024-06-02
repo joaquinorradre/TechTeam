@@ -2,7 +2,6 @@
 
 namespace Tests\Unit\User;
 
-use App\Http\Requests\GetTimelineRequest;
 use App\Http\Requests\GetUsersRequest;
 use Illuminate\Foundation\Testing\TestCase;
 use Illuminate\Support\Facades\Validator;
@@ -12,7 +11,7 @@ class GetUserRequestTest extends TestCase
     /**
      * @test
      */
-    public function givenARequestReturnTrueAuthorization()
+    public function given_a_request_return_true_authorization()
     {
         $request = new GetUsersRequest();
 
@@ -22,7 +21,7 @@ class GetUserRequestTest extends TestCase
     /**
      * @test
      */
-    public function givenAnEmptyIdReturnError()
+    public function given_an_empty_id_return_error()
     {
         $request = new GetUsersRequest();
 
@@ -35,7 +34,7 @@ class GetUserRequestTest extends TestCase
     /**
      * @test
      */
-    public function givenAnIdWithInvalidFormatReturnError()
+    public function given_an_id_with_invalid_format_return_error()
     {
         $request = new GetUsersRequest();
 
@@ -48,7 +47,7 @@ class GetUserRequestTest extends TestCase
     /**
      * @test
      */
-    public function givenAValidIdReturnValue()
+    public function given_a_valid_id_return_value()
     {
         $request = new GetUsersRequest();
 
@@ -57,5 +56,4 @@ class GetUserRequestTest extends TestCase
         $this->assertTrue($validator->passes());
         $this->assertFalse($validator->errors()->has('id'));
     }
-
 }

@@ -17,7 +17,7 @@ class UsersFollowDataManagerTest extends TestCase
     /**
      * @test
      */
-    public function givenACorrectTokenAndApiResponseDoGetUserData()
+    public function given_a_correct_token_and_correct_api_response_do_get_user_data()
     {
         $apiClientMock = Mockery::mock(ApiClient::class);
         $dbClientMock = Mockery::mock(DBClient::class);

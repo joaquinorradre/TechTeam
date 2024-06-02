@@ -14,7 +14,7 @@ class CreateUserServiceTest extends TestCase
      * @test
      * @throws Exception
      */
-    public function givenUniqueUsernameCreateUserSuccessfully()
+    public function when_username_is_unique_should_create_user_successfully()
     {
         $dbClientMock = Mockery::mock(DBClient::class);
         $dbClientMock
@@ -37,7 +37,7 @@ class CreateUserServiceTest extends TestCase
     /**
      * @test
      */
-    public function givenExistingUsernameThrowsConflictException()
+    public function when_username_exists_should_throw_conflict_exception()
     {
         $dbClientMock = Mockery::mock(DBClient::class);
         $dbClientMock
@@ -57,7 +57,7 @@ class CreateUserServiceTest extends TestCase
     /**
      * @test
      */
-    public function givenDatabaseErrorThrowsInternalServerErrorException()
+    public function when_database_error_should_throw_internal_server_error_exception()
     {
         $dbClientMock = Mockery::mock(DBClient::class);
         $dbClientMock

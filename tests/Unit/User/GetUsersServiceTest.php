@@ -13,7 +13,7 @@ class GetUsersServiceTest extends TestCase
      * @test
      * @throws \Exception
      */
-    public function givenACorrectResponseUserIsGiven()
+    public function given_a_correct_response_user_is_given()
     {
         $userDataManagerMock = Mockery::mock(UserDataManager::class);
         $userId = 29;
@@ -36,7 +36,7 @@ class GetUsersServiceTest extends TestCase
      * @test
      * @throws \Exception
      */
-    public function givenAnIncorrectResponseReturnError()
+    public function given_an_incorrect_response_should_return_error()
     {
         $userDataManagerMock = Mockery::mock(UserDataManager::class);
         $userId = 45;

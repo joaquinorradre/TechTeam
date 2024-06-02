@@ -10,7 +10,7 @@ class StreamsDataSerializerTest extends TestCase
     /**
      * @test
      */
-    public function serializationWithValidData()
+    public function given_valid_data_serialization_should_be_successful()
     {
         $serializer = new StreamsDataSerializer();
         $streams = [
@@ -30,7 +30,7 @@ class StreamsDataSerializerTest extends TestCase
     /**
      * @test
      */
-    public function serializationWithEmptyData()
+    public function given_empty_data_serialization_should_return_empty_array()
     {
         $serializer = new StreamsDataSerializer();
         $streams = [];

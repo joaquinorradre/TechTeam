@@ -15,7 +15,7 @@ class TopsOfTheTopsDataManagerTest extends TestCase
     /**
      * @test
      */
-    public function fetchGamesReturnsCollection()
+    public function fetch_games_returns_collection()
     {
         $dbClientMock = Mockery::mock(DBClient::class);
         $apiClientMock = Mockery::mock(ApiClient::class);
@@ -35,7 +35,7 @@ class TopsOfTheTopsDataManagerTest extends TestCase
      * @test
      * @throws \Exception
      */
-    public function updateGamesDataUpdatesAndReturnsGameData()
+    public function update_games_data_updates_and_returns_game_data()
     {
         $dbClientMock = Mockery::mock(DBClient::class);
         $apiClientMock = Mockery::mock(ApiClient::class);
@@ -73,7 +73,7 @@ class TopsOfTheTopsDataManagerTest extends TestCase
      * @test
      * @throws \Exception
      */
-    public function updateExistingGamesDataUpdatesAndReturnsGameData()
+    public function update_existing_games_data_updates_and_returns_game_data()
     {
         $dbClientMock = Mockery::mock(DBClient::class);
         $apiClientMock = Mockery::mock(ApiClient::class);

@@ -13,7 +13,7 @@ class GetStreamsServiceTest extends TestCase
      * @test
      * @throws \Exception
      */
-    public function givenAValidResponseFromTwitchDoExecuteMethod()
+    public function given_valid_response_from_twitch_should_execute_method()
     {
         $streamsDataManagerMock = Mockery::mock(StreamsDataManager::class);
         $getStreamsService = new GetStreamsService($streamsDataManagerMock);
@@ -34,7 +34,7 @@ class GetStreamsServiceTest extends TestCase
      * @test
      * @throws \Exception
      */
-    public function givenANullResponseFromTwitchDoExecuteMethod()
+    public function given_null_response_from_twitch_should_execute_method()
     {
         $streamsDataManagerMock = Mockery::mock(StreamsDataManager::class);
         $getStreamsService = new GetStreamsService($streamsDataManagerMock);

@@ -14,7 +14,7 @@ class GetTimelineServiceTest extends TestCase
     /**
      * @test
      */
-    public function ExecuteSuccess()
+    public function when_executing_with_success_timeline_data_should_be_returned()
     {
         $timelineDataManagerMock = Mockery::mock(TimelineDataManager::class);
         $timelineDataManagerMock->shouldReceive('getTimeline')->with('1')->andReturn(['timeline' => 'data']);
@@ -28,7 +28,7 @@ class GetTimelineServiceTest extends TestCase
     /**
      * @test
      */
-    public function ExecuteException()
+    public function when_executing_with_exception_should_throw_exception()
     {
         $this->expectException(Exception::class);
 

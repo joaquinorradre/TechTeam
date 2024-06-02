@@ -13,14 +13,20 @@ class CreateUserRequestTest extends TestCase
         parent::setUp();
     }
 
-    public function testAuthorization()
+    /**
+     * @test
+     */
+    public function should_authorize_request()
     {
         $request = new CreateUserRequest();
 
         $this->assertTrue($request->authorize());
     }
 
-    public function testValidationRules()
+    /**
+     * @test
+     */
+    public function should_return_correct_validation_rules()
     {
         $request = new CreateUserRequest();
 
@@ -32,7 +38,10 @@ class CreateUserRequestTest extends TestCase
         ], $rules);
     }
 
-    public function testValidationMessages()
+    /**
+     * @test
+     */
+    public function should_return_correct_validation_messages()
     {
         $request = new CreateUserRequest();
 
@@ -48,7 +57,10 @@ class CreateUserRequestTest extends TestCase
         ], $messages);
     }
 
-    public function testValidationSuccess()
+    /**
+     * @test
+     */
+    public function when_data_is_valid_should_pass_validation()
     {
         $data = [
             'username' => 'validusername',
@@ -61,7 +73,10 @@ class CreateUserRequestTest extends TestCase
         $this->assertTrue($validator->passes());
     }
 
-    public function testValidationFailure()
+    /**
+     * @test
+     */
+    public function when_data_is_invalid_should_fail_validation()
     {
         $data = [
             'username' => '',

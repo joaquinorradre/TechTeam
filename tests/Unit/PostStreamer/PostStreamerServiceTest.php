@@ -15,7 +15,7 @@ class PostStreamerServiceTest extends TestCase
      * @test
      * @throws Exception
      */
-    public function executeAddsStreamerToDatabaseWhenStreamerExists()
+    public function when_streamer_exists_should_add_streamer_to_database()
     {
         $streamerExistManagerMock = Mockery::mock(StreamerExistManager::class);
         $streamerExistManagerMock
@@ -39,7 +39,7 @@ class PostStreamerServiceTest extends TestCase
      * @test
      * @throws Exception
      */
-    public function executeDoesNotAddStreamerToDatabaseWhenStreamerDoesNotExist()
+    public function when_streamer_does_not_exist_should_not_add_streamer_to_database()
     {
         $streamerExistManagerMock = Mockery::mock(StreamerExistManager::class);
         $streamerExistManagerMock

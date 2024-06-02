@@ -25,10 +25,11 @@ class GetTopOfTheTopsServiceTest extends TestCase
         parent::tearDown();
     }
 
-    /** @test
+    /**
+     * @test
      * @throws Exception
      */
-    public function updatesGamesDataWhenNoGamesExist()
+    public function updates_games_data_when_no_games_exist()
     {
         $since = 600;
         $this->topsOfTheTopsDataManager
@@ -52,10 +53,11 @@ class GetTopOfTheTopsServiceTest extends TestCase
         $this->assertEquals($expectedData, $result);
     }
 
-    /** @test
+    /**
+     * @test
      * @throws Exception
      */
-    public function updatesExistingGamesDataWhenGamesExist()
+    public function updates_existing_games_data_when_games_exist()
     {
         $since = 600;
         $this->topsOfTheTopsDataManager
@@ -82,8 +84,10 @@ class GetTopOfTheTopsServiceTest extends TestCase
         $this->assertEquals($expectedData, $result);
     }
 
-    /** @test */
-    public function throwsExceptionWhenUpdateGamesDataFails()
+    /**
+     * @test
+     */
+    public function throws_exception_when_update_games_data_fails()
     {
         $since = 600;
         $this->topsOfTheTopsDataManager
@@ -101,8 +105,10 @@ class GetTopOfTheTopsServiceTest extends TestCase
         $this->service->execute($since);
     }
 
-    /** @test */
-    public function throwsExceptionWhenUpdateExistingGamesDataFails()
+    /**
+     * @test
+     */
+    public function throws_exception_when_update_existing_games_data_fails()
     {
         $since = 600;
         $this->topsOfTheTopsDataManager

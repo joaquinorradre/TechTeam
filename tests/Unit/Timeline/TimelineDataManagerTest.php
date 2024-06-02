@@ -1,13 +1,13 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Unit\Services;
 
 use App\Http\Clients\ApiClient;
 use App\Http\Clients\DBClient;
-use App\Services\TimelineDataManager;
 use App\Services\TwitchTokenService;
-use PHPUnit\Framework\TestCase;
+use App\Services\TimelineDataManager;
 use Mockery;
+use PHPUnit\Framework\TestCase;
 
 class TimelineDataManagerTest extends TestCase
 {
@@ -20,7 +20,7 @@ class TimelineDataManagerTest extends TestCase
      * @test
      * @throws \Exception
      */
-    public function givenAValidUserIdGetTimeline()
+    public function given_a_valid_user_id_timeline_data_manager_should_return_timeline_data()
     {
         $apiClientMock = Mockery::mock(ApiClient::class);
         $dbClientMock = Mockery::mock(DBClient::class);
@@ -71,7 +71,7 @@ class TimelineDataManagerTest extends TestCase
      * @test
      * @throws \Exception
      */
-    public function givenAnInvalidUserIdGetTimelineThrowsException()
+    public function given_an_invalid_user_id_timeline_data_manager_should_return_empty_array()
     {
         $apiClientMock = Mockery::mock(ApiClient::class);
         $dbClientMock = Mockery::mock(DBClient::class);
@@ -97,7 +97,7 @@ class TimelineDataManagerTest extends TestCase
     /**
      * @test
      */
-    public function givenATokenServiceFailureGetTimelineThrowsException()
+    public function given_a_token_service_failure_timeline_data_manager_should_throw_exception()
     {
         $apiClientMock = Mockery::mock(ApiClient::class);
         $dbClientMock = Mockery::mock(DBClient::class);
@@ -118,7 +118,7 @@ class TimelineDataManagerTest extends TestCase
     /**
      * @test
      */
-    public function givenACurlCallFailureGetTimelineThrowsException()
+    public function given_a_curl_call_failure_timeline_data_manager_should_throw_exception()
     {
         $apiClientMock = Mockery::mock(ApiClient::class);
         $dbClientMock = Mockery::mock(DBClient::class);

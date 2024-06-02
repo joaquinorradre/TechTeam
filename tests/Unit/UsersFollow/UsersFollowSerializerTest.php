@@ -10,7 +10,7 @@ class UsersFollowSerializerTest extends TestCase
     /**
      * @test
      */
-    public function serializationWithValidData()
+    public function serialization_with_valid_data()
     {
         $serializer = new UsersFollowSerializer();
 

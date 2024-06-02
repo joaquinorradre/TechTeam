@@ -16,7 +16,7 @@ class StreamerExistManagerTest extends TestCase
      * @test
      * @throws Exception
      */
-    public function getStreamerMethodWhenStreamerExists()
+    public function when_streamer_exists_should_return_true()
     {
         $twitchTokenService = Mockery::mock(TwitchTokenService::class);
         $twitchTokenService
@@ -43,7 +43,7 @@ class StreamerExistManagerTest extends TestCase
      * @test
      * @throws Exception
      */
-    public function getStreamerMethodWhenStreamerDoesNotExist()
+    public function when_streamer_does_not_exist_should_return_false()
     {
         $twitchTokenService = Mockery::mock(TwitchTokenService::class);
         $twitchTokenService
@@ -69,7 +69,7 @@ class StreamerExistManagerTest extends TestCase
     /**
      * @test
      */
-    public function testGetStreamerMethodThrowsException()
+    public function when_api_call_fails_should_throw_exception()
     {
         $twitchTokenService = Mockery::mock(TwitchTokenService::class);
         $twitchTokenService
@@ -90,5 +90,4 @@ class StreamerExistManagerTest extends TestCase
 
         $manager->getStreamer('123');
     }
-
 }
