@@ -120,23 +120,20 @@ class DBClient
             ->get();
     }
 
-    public function searchUser(string $username): bool
+    public function createUser(string $username, string $password): void
     {
-        $result = DB::table('User')
-            ->select('User.username')
-            ->where('User.username', $username)
-            ->get();
-
-        return $result->isNotEmpty();
+        try {
+            DB::table('User')->insert([
+                'name' => $username,
+                'password' => $password,
+            ]);
+        } catch (Exception $exception) {
+            throw new Exception('Error del servidor al crear el usuario', 500);
+        }
     }
 
-    public function createUser(string $username, string $password): bool
+    public function userExistsInDatabase(string $username): bool
     {
-        $result = DB::table('user')->insert([
-            'username' => $username,
-            'password' => $password,
-        ]);
-
-        return $result;
+        return DB::table('User')->where('name', $username)->exists();
     }
 }
