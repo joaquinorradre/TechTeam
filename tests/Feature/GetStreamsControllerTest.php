@@ -15,7 +15,6 @@ use Mockery;
 
 class GetStreamsControllerTest extends TestCase
 {
-
     /**
      * @test
      */
@@ -66,5 +65,4 @@ class GetStreamsControllerTest extends TestCase
 
         $this->assertNotEmpty($result);
     }
-
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Feature;
 
 use App\Http\Clients\ApiClient;
 use App\Http\Clients\DBClient;
@@ -16,9 +16,15 @@ use Tests\TestCase;
 
 class GetTopOfTheTopsControllerTest extends TestCase
 {
+    protected function tearDown(): void
+    {
+        Mockery::close();
+        parent::tearDown();
+    }
 
     /**
      * @test
+     * @throws \Exception
      */
     public function getTopOfTheTops()
     {
