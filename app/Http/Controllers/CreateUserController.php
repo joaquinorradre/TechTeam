@@ -57,4 +57,3 @@ class CreateUserController extends Controller
         }
     }
 }
-
