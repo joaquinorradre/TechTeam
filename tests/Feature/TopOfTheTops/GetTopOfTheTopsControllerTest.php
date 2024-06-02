@@ -16,6 +16,12 @@ use Tests\TestCase;
 
 class GetTopOfTheTopsControllerTest extends TestCase
 {
+    protected function tearDown(): void
+    {
+        Mockery::close();
+        parent::tearDown();
+    }
+
     /**
      * @test
      */
