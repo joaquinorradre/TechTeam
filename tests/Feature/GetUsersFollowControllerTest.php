@@ -66,9 +66,4 @@ class GetUsersFollowControllerTest extends TestCase
         $this->assertNotEmpty($result);
     }
 
-    protected function tearDown(): void
-    {
-        Mockery::close();
-        parent::tearDown();
-    }
 }

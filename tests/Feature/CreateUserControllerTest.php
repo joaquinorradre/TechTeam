@@ -127,9 +127,4 @@ class CreateUserControllerTest extends TestCase
         ]), $result->getContent());
     }
 
-    protected function tearDown(): void
-    {
-        Mockery::close();
-        parent::tearDown();
-    }
 }

@@ -89,10 +89,4 @@ class GetTopOfTheTopsControllerTest extends TestCase
         );
     }
 
-    protected function tearDown(): void
-    {
-        Mockery::close();
-        parent::tearDown();
-    }
-
 }
