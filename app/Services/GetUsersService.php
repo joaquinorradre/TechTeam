@@ -22,5 +22,4 @@ class GetUsersService
 
         return($response['data']);
     }
-
 }

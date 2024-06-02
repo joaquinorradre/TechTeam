@@ -4,23 +4,21 @@ namespace App\Services;
 
 use App\Http\Clients\ApiClient;
 use App\Http\Clients\DBClient;
-use App\Services\Methods;
+use DateTime;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
 class TopsOfTheTopsDataManager
 {
-    private const GAMES_TWITCH_URL = 'https://api.twitch.tv/helix/games/top?first=3';
-    private Methods $methods;
+    public const GAMES_TWITCH_URL = 'https://api.twitch.tv/helix/games/top?first=3';
     private DBClient $dbClient;
     private ApiClient $apiClient;
     private TwitchTokenService $twitchTokenService;
 
 
-    public function __construct(Methods $methods, DBClient $dbClient, ApiClient $apiClient, TwitchTokenService $twitchTokenService)
+    public function __construct(DBClient $dbClient, ApiClient $apiClient, TwitchTokenService $twitchTokenService)
     {
-        $this->methods = $methods;
         $this->dbClient = $dbClient;
         $this->apiClient = $apiClient;
         $this->twitchTokenService = $twitchTokenService;
@@ -96,9 +94,12 @@ class TopsOfTheTopsDataManager
         }
     }
 
+    /**
+     * @throws Exception
+     */
     private function updateExistingGame($gamesResponse, $existingId, $since): void
     {
-        $timeDiffInSeconds = $this->methods->obtenerTiempoDesdeUltimaActualizacion($existingId);
+        $timeDiffInSeconds = $this->obtenerTiempoDesdeUltimaActualizacion($existingId);
         if ($timeDiffInSeconds === null || $timeDiffInSeconds > $since) {
             $this->dbClient->updateGame($existingId, $gamesResponse);
         }
@@ -181,6 +182,27 @@ class TopsOfTheTopsDataManager
         }catch (Exception $exception) {
             throw new Exception($exception->getMessage(), $exception->getCode());
         }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public static function obtenerTiempoDesdeUltimaActualizacion($idGame)
+    {
+        $result = DB::table('Game')->select('last_update')->where('game_id', $idGame)->first();
+
+        if ($result) {
+            $lastUpdateTimestamp = $result->last_update;
+            $lastUpdateTimestamp_dt = new DateTime($lastUpdateTimestamp);
+            $tiempoActual = now()->format('Y-m-d H:i:s');
+            $tiempoActual_dt = new DateTime($tiempoActual);
+            $diff1 = $lastUpdateTimestamp_dt->diff($tiempoActual_dt);
+            $hours = $diff1->format('%H');
+            $minutes = $diff1->format('%I');
+            $seconds = $diff1->format('%S');
+            return $hours * 3600 + $minutes * 60 + $seconds;
+        }
+        return null;
     }
 
 }

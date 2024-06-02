@@ -9,13 +9,15 @@ use App\Services\GetTopOfTheTopsService;
 
 class GetTopOfTheTopsController extends Controller
 {
-    private GetTopOfTheTopsService $getTopOfTheTopsService;
-    private TopsOfTheTopsDataSerializer $topsOfTheTopsDataSerializer;
+    private GetTopOfTheTopsService $topOfTheTopsService;
+    private TopsOfTheTopsDataSerializer $topsOfTopsSerializer;
 
-    public function __construct(GetTopOfTheTopsService $getTopOfTheTopsService, TopsOfTheTopsDataSerializer $topsOfTheTopsDataSerializer)
-    {
-        $this->getTopOfTheTopsService = $getTopOfTheTopsService;
-        $this->topsOfTheTopsDataSerializer = $topsOfTheTopsDataSerializer;
+    public function __construct(
+        GetTopOfTheTopsService $topOfTheTopsService,
+        TopsOfTheTopsDataSerializer $topsOfTopsSerializer
+    ) {
+        $this->topOfTheTopsService = $topOfTheTopsService;
+        $this->topsOfTopsSerializer = $topsOfTopsSerializer;
     }
 
     /**
@@ -24,7 +26,7 @@ class GetTopOfTheTopsController extends Controller
     public function __invoke(Request $request): JsonResponse
     {
         $since = $request->input('since', 600);
-        $topOfTheTops = $this->getTopOfTheTopsService->execute($since);
+        $topOfTheTops = $this->topOfTheTopsService->execute($since);
         //$serializedTopOfTheTops = $this->topsOfTheTopsDataSerializer->serialize($topOfTheTops);
 
         return new JsonResponse($topOfTheTops, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
