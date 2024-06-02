@@ -4,31 +4,19 @@ namespace App\Serializers;
 
 class UserDataSerializer
 {
-    public static function serialize(array $data): array
+    public function serialize(array $userData): array
     {
-        $serializedData = [];
+        $serializedUserData = [];
 
-        foreach ($data as $username => $streamers) {
-            $serializedData[] = [
-                'username' => $username,
-                'followedStreamers' => $streamers
-            ];
+        foreach ($userData as $user) {
+            $userData = [];
+            foreach ($user as $key => $value) {
+                $userData[$key] = $value;
+            }
+            $serializedUserData[] = $userData;
         }
 
-        return $serializedData;
+        return $serializedUserData;
     }
 
-    public static function serializeTimeline(array $streams): array
-    {
-        return array_map(function ($stream) {
-            return [
-                'streamerId' => $stream['streamerId'],
-                'streamerName' => $stream['streamerName'],
-                'title' => $stream['title'],
-                'game' => $stream['game'],
-                'viewerCount' => $stream['viewerCount'],
-                'startedAt' => $stream['startedAt'],
-            ];
-        }, $streams);
-    }
 }

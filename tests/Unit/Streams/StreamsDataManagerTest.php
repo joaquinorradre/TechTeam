@@ -13,22 +13,20 @@ class StreamsDataManagerTest extends TestCase
 {
     /**
      * @test
+     * @throws Exception
      */
     public function givenATokenRetrievalSuccessfulDoGetStreams()
     {
         $apiClientMock = Mockery::mock(ApiClient::class);
         $twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
-
         $twitchTokenServiceMock
             ->shouldReceive('getToken')
             ->andReturn('access_token');
-
         $apiClientMock
             ->shouldReceive('makeCurlCall')
             ->once()
             ->with('https://api.twitch.tv/helix/streams', 'access_token')
             ->andReturn(['response' => json_encode(['data' => [['title' => 'Stream 1', 'user_name' => 'User 1']]]), 'status' => 200]);
-
         $streamsDataManager = new StreamsDataManager($apiClientMock, $twitchTokenServiceMock);
 
         $result = $streamsDataManager->getStreams();
@@ -44,11 +42,9 @@ class StreamsDataManagerTest extends TestCase
     {
         $apiClientMock = Mockery::mock(ApiClient::class);
         $twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
-
         $twitchTokenServiceMock
             ->shouldReceive('getToken')
             ->andThrow(new Exception('Error al obtener el token de Twitch', 500));
-
         $streamsDataManager = new StreamsDataManager($apiClientMock, $twitchTokenServiceMock);
 
         try {
@@ -70,15 +66,12 @@ class StreamsDataManagerTest extends TestCase
     {
         $apiClientMock = Mockery::mock(ApiClient::class);
         $twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
-
         $twitchTokenServiceMock
             ->shouldReceive('getToken')
             ->andReturn('access_token');
-
         $apiClientMock
             ->shouldReceive('makeCurlCall')
             ->andThrow(new Exception('Error al llamar a la API de Twitch', 500));
-
         $streamsDataManager = new StreamsDataManager($apiClientMock, $twitchTokenServiceMock);
 
         try {
@@ -100,16 +93,13 @@ class StreamsDataManagerTest extends TestCase
     {
         $apiClientMock = Mockery::mock(ApiClient::class);
         $twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
-
         $twitchTokenServiceMock
             ->shouldReceive('getToken')
             ->andReturn('access_token');
-
         $apiClientMock
             ->shouldReceive('makeCurlCall')
             ->once()
             ->andReturn(['response' => null, 'status' => 500]);
-
         $streamsDataManager = new StreamsDataManager($apiClientMock, $twitchTokenServiceMock);
 
         try {
@@ -124,4 +114,3 @@ class StreamsDataManagerTest extends TestCase
         $this->fail('Se esperaba que se lanzara una excepción.');
     }
 }
-

@@ -27,6 +27,7 @@ class TwitchTokenServiceTest extends TestCase
 
     /**
      * @test
+     * @throws Exception
      */
     public function it_returns_token_when_database_access_is_successful()
     {
@@ -42,6 +43,7 @@ class TwitchTokenServiceTest extends TestCase
 
     /**
      * @test
+     * @throws Exception
      */
     public function it_fetches_token_from_api_and_saves_to_database_when_database_access_fails()
     {
@@ -49,12 +51,10 @@ class TwitchTokenServiceTest extends TestCase
             ->shouldReceive('getTokenFromDatabase')
             ->once()
             ->andReturn(null);
-
         $this->dbClientMock
             ->shouldReceive('addTokenToDatabase')
             ->once()
             ->with('api_token');
-
         $this->apiClientMock
             ->shouldReceive('getTokenFromAPI')
             ->once()
@@ -74,14 +74,13 @@ class TwitchTokenServiceTest extends TestCase
             ->shouldReceive('getTokenFromDatabase')
             ->once()
             ->andReturn(null);
-
         $this->apiClientMock
             ->shouldReceive('getTokenFromAPI')
             ->once()
             ->andThrow(new Exception('API error'));
 
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage('No se puede establecer conexión con Twitch en este momento');
+        $this->expectExceptionMessage('Token de autenticación no proporcionado o inválido');
 
         $this->twitchTokenService->getToken();
     }

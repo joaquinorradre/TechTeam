@@ -13,7 +13,6 @@ class StreamsDataSerializerTest extends TestCase
     public function serializationWithValidData()
     {
         $serializer = new StreamsDataSerializer();
-
         $streams = [
             ['title' => 'Stream 1', 'user_name' => 'User 1'],
             ['title' => 'Stream 2', 'user_name' => 'User 2'],
@@ -27,5 +26,18 @@ class StreamsDataSerializerTest extends TestCase
         $this->assertEquals('Stream 1', $serializedStreams[0]['title']);
         $this->assertEquals('User 1', $serializedStreams[0]['user_name']);
     }
-}
 
+    /**
+     * @test
+     */
+    public function serializationWithEmptyData()
+    {
+        $serializer = new StreamsDataSerializer();
+        $streams = [];
+
+        $serializedStreams = $serializer->serialize($streams);
+
+        $this->assertIsArray($serializedStreams);
+        $this->assertEmpty($serializedStreams);
+    }
+}

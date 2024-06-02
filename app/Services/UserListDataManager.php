@@ -46,7 +46,7 @@ class UserListDataManager
                 $response = $this->apiClient->makeCurlCall("https://api.twitch.tv/helix/users?id={$userWithFollowedStreamers->streamerId}", $twitchToken);
 
                 if ($response['status'] !== Response::HTTP_OK) {
-                    throw new Exception('Error al obtener el login del streamer', $response['status']);
+                    throw new Exception('Errorcillo al obtener el login del streamer', $response['status']);
                 }
 
                 $streamerData = json_decode($response['response'], true)['data'];

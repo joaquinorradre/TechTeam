@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Services;
+namespace Tests\Unit\TopOfTheTops;
 
 use App\Services\GetTopOfTheTopsService;
 use App\Services\TopsOfTheTopsDataManager;
@@ -25,16 +25,16 @@ class GetTopOfTheTopsServiceTest extends TestCase
         parent::tearDown();
     }
 
-    /** @test */
+    /** @test
+     * @throws Exception
+     */
     public function updatesGamesDataWhenNoGamesExist()
     {
-        // Arrange
         $since = 600;
         $this->topsOfTheTopsDataManager
             ->shouldReceive('fetchGames')
             ->once()
             ->andReturn(new Collection([]));
-
         $expectedData = [
             'data' => [
                 ['id' => '1', 'name' => 'Game 1'],
@@ -42,23 +42,21 @@ class GetTopOfTheTopsServiceTest extends TestCase
                 ['id' => '3', 'name' => 'Game 3']
             ]
         ];
-
         $this->topsOfTheTopsDataManager
             ->shouldReceive('updateGamesData')
             ->once()
             ->andReturn($expectedData);
 
-        // Act
         $result = $this->service->execute($since);
 
-        // Assert
         $this->assertEquals($expectedData, $result);
     }
 
-    /** @test */
+    /** @test
+     * @throws Exception
+     */
     public function updatesExistingGamesDataWhenGamesExist()
     {
-        // Arrange
         $since = 600;
         $this->topsOfTheTopsDataManager
             ->shouldReceive('fetchGames')
@@ -66,7 +64,6 @@ class GetTopOfTheTopsServiceTest extends TestCase
             ->andReturn(new Collection([
                 ['id' => '1', 'name' => 'Game 1']
             ]));
-
         $expectedData = [
             'data' => [
                 ['id' => '1', 'name' => 'Game 1'],
@@ -74,47 +71,39 @@ class GetTopOfTheTopsServiceTest extends TestCase
                 ['id' => '3', 'name' => 'Game 3']
             ]
         ];
-
         $this->topsOfTheTopsDataManager
             ->shouldReceive('updateExistingGamesData')
             ->once()
             ->with($since)
             ->andReturn($expectedData);
 
-        // Act
         $result = $this->service->execute($since);
 
-        // Assert
         $this->assertEquals($expectedData, $result);
     }
 
     /** @test */
     public function throwsExceptionWhenUpdateGamesDataFails()
     {
-        // Arrange
         $since = 600;
         $this->topsOfTheTopsDataManager
             ->shouldReceive('fetchGames')
             ->once()
             ->andReturn(new Collection([]));
-
         $this->topsOfTheTopsDataManager
             ->shouldReceive('updateGamesData')
             ->once()
             ->andThrow(new Exception('Error updating game data'));
 
-        // Assert
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Error updating game data');
 
-        // Act
         $this->service->execute($since);
     }
 
     /** @test */
     public function throwsExceptionWhenUpdateExistingGamesDataFails()
     {
-        // Arrange
         $since = 600;
         $this->topsOfTheTopsDataManager
             ->shouldReceive('fetchGames')
@@ -122,18 +111,15 @@ class GetTopOfTheTopsServiceTest extends TestCase
             ->andReturn(new Collection([
                 ['id' => '1', 'name' => 'Game 1']
             ]));
-
         $this->topsOfTheTopsDataManager
             ->shouldReceive('updateExistingGamesData')
             ->once()
             ->with($since)
             ->andThrow(new Exception('Error updating existing game data'));
 
-        // Assert
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Error updating existing game data');
 
-        // Act
         $this->service->execute($since);
     }
 }

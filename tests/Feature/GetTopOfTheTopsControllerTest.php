@@ -1,6 +1,6 @@
 <?php
 
-namespace Feature;
+namespace Tests\Feature;
 
 use App\Http\Clients\ApiClient;
 use App\Http\Clients\DBClient;
@@ -16,27 +16,18 @@ use Tests\TestCase;
 
 class GetTopOfTheTopsControllerTest extends TestCase
 {
-    protected function tearDown(): void
-    {
-        Mockery::close();
-        parent::tearDown();
-    }
-
     /**
      * @test
-     * @throws \Exception
      */
     public function getTopOfTheTops()
     {
         $request = Request::create('/analytics/tops', 'GET', ['since' => 600]);
-
         $apiClientMock = Mockery::mock(ApiClient::class);
         $dbClientMock = Mockery::mock(DBClient::class);
         $twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
         $topsOfTheTopsDataManagerMock = Mockery::mock(TopsOfTheTopsDataManager::class);
         $getTopOfTheTopsServiceMock = Mockery::mock(GetTopOfTheTopsService::class);
         $topsOfTheTopsDataSerializerMock = Mockery::mock(TopsOfTheTopsDataSerializer::class);
-
         $gamesData = [
             'data' => [
                 ['id' => '123', 'name' => 'Game 1'],
@@ -44,11 +35,9 @@ class GetTopOfTheTopsControllerTest extends TestCase
                 ['id' => '789', 'name' => 'Game 3'],
             ]
         ];
-
         $apiClientMock
             ->shouldReceive('makeCurlCall')
             ->andReturn(['response' => json_encode($gamesData), 'status' => 200]);
-
         $dbClientMock
             ->shouldReceive('fetchGames')
             ->andReturn(collect([]))
@@ -57,11 +46,9 @@ class GetTopOfTheTopsControllerTest extends TestCase
             ->andReturnNull()
             ->shouldReceive('getGameData')
             ->andReturn($gamesData['data']);
-
         $twitchTokenServiceMock
             ->shouldReceive('getToken')
             ->andReturn('token');
-
         $topsOfTheTopsDataManagerMock
             ->shouldReceive('updateGamesData')
             ->andReturn($gamesData['data'])
@@ -70,17 +57,14 @@ class GetTopOfTheTopsControllerTest extends TestCase
             ->andReturn($gamesData['data'])
             ->shouldReceive('fetchGames')
             ->andReturn(collect($gamesData['data']));
-
         $getTopOfTheTopsServiceMock
             ->shouldReceive('execute')
             ->with(600)
             ->andReturn($gamesData['data']);
-
         $topsOfTheTopsDataSerializerMock
             ->shouldReceive('serialize')
             ->with($gamesData['data'])
             ->andReturn($gamesData['data']);
-
         $controller = new GetTopOfTheTopsController(
             $getTopOfTheTopsServiceMock,
             $topsOfTheTopsDataSerializerMock

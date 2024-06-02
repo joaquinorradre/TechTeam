@@ -23,25 +23,29 @@ class TwitchTokenService
      */
     public function getToken(): string
     {
-        $databaseTokenResponse = $this->dbClient->getTokenFromDatabase();
+        try{
+            $databaseTokenResponse = $this->dbClient->getTokenFromDatabase();
 
-        if ($databaseTokenResponse != null) {
-            return $databaseTokenResponse;
-        }
-
-        try {
-            $apiTokenResponse = $this->apiClient->getTokenFromAPI();
-            $result = json_decode($apiTokenResponse, true);
-
-            if (isset($result['access_token'])) {
-                $this->dbClient->addTokenToDatabase($result['access_token']);
-                return $result['access_token'];
+            if ($databaseTokenResponse != null) {
+                return $databaseTokenResponse;
             }
-            else {
-                throw new Exception("No se pudo obtener el token de la API de Twitch");
+
+            try {
+                $apiTokenResponse = $this->apiClient->getTokenFromAPI();
+                $result = json_decode($apiTokenResponse, true);
+
+                if (isset($result['access_token'])) {
+                    $this->dbClient->addTokenToDatabase($result['access_token']);
+                    return $result['access_token'];
+                }
+                else {
+                    throw new Exception("No se pudo obtener el token de la API de Twitch");
+                }
+            } catch (Exception $exception) {
+                throw new Exception('No se puede establecer conexión con Twitch en este momento', Response::HTTP_SERVICE_UNAVAILABLE);
             }
         } catch (Exception $exception) {
-            throw new Exception('No se puede establecer conexión con Twitch en este momento', Response::HTTP_SERVICE_UNAVAILABLE);
+            throw new Exception('Token de autenticación no proporcionado o inválido', Response::HTTP_UNAUTHORIZED);
         }
     }
 }

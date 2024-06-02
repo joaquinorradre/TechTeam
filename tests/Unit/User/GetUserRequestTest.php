@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Unit\User;
 
 use App\Http\Requests\GetTimelineRequest;
 use App\Http\Requests\GetUsersRequest;

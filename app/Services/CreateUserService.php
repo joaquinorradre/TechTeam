@@ -14,7 +14,10 @@ class CreateUserService
         $this->dbClient = $dbClient;
     }
 
-    public function createUser(string $username, string $password)
+    /**
+     * @throws Exception
+     */
+    public function createUser(string $username, string $password): true
     {
         if ($this->dbClient->userExistsInDatabase($username)) {
             throw new Exception('El nombre de usuario ya existe', 409);

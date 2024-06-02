@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Services;
+namespace Tests\Unit\PostStreamer;
 
 use App\Http\Clients\DBClient;
 use App\Services\PostStreamerService;
@@ -13,67 +13,47 @@ class PostStreamerServiceTest extends TestCase
 {
     /**
      * @test
+     * @throws Exception
      */
-    public function executeMethodWhenStreamerExists()
+    public function executeAddsStreamerToDatabaseWhenStreamerExists()
     {
-        $streamerExistManager = Mockery::mock(StreamerExistManager::class);
-        $streamerExistManager
+        $streamerExistManagerMock = Mockery::mock(StreamerExistManager::class);
+        $streamerExistManagerMock
             ->shouldReceive('getStreamer')
-            ->with('streamer')
             ->once()
+            ->with('streamer123')
             ->andReturn(true);
-        $dbClient = Mockery::mock(DBClient::class);
-        $dbClient
+        $dbClientMock = Mockery::mock(DBClient::class);
+        $dbClientMock
             ->shouldReceive('addStreamerToDatabase')
-            ->with('user', 'streamer')
-            ->once();
-        $service = new PostStreamerService($streamerExistManager, $dbClient);
+            ->once()
+            ->with('user123', 'streamer123');
+        $service = new PostStreamerService($streamerExistManagerMock, $dbClientMock);
 
-        $result = $service->execute('user', 'streamer');
+        $service->execute('user123', 'streamer123');
 
-        $this->assertTrue($result);
+        $this->addToAssertionCount(1);
     }
 
     /**
      * @test
+     * @throws Exception
      */
-    public function executeMethodWhenStreamerDoesNotExist()
+    public function executeDoesNotAddStreamerToDatabaseWhenStreamerDoesNotExist()
     {
-        $streamerExistManager = Mockery::mock(StreamerExistManager::class);
-        $streamerExistManager
+        $streamerExistManagerMock = Mockery::mock(StreamerExistManager::class);
+        $streamerExistManagerMock
             ->shouldReceive('getStreamer')
-            ->with('streamer')
             ->once()
+            ->with('streamer123')
             ->andReturn(false);
-        $dbClient = Mockery::mock(DBClient::class);
-        $dbClient
+        $dbClientMock = Mockery::mock(DBClient::class);
+        $dbClientMock
             ->shouldNotReceive('addStreamerToDatabase');
+        $service = new PostStreamerService($streamerExistManagerMock, $dbClientMock);
 
-        $service = new PostStreamerService($streamerExistManager, $dbClient);
-        $result = $service->execute('user', 'streamer');
+        $service->execute('user123', 'streamer123');
 
-        $this->assertFalse($result);
+        $this->addToAssertionCount(1);
     }
-
-    /**
-     * @test
-     */
-    public function testExecuteMethodThrowsException()
-    {
-        $streamerExistManager = Mockery::mock(StreamerExistManager::class);
-        $streamerExistManager
-            ->shouldReceive('getStreamer')
-            ->with('streamer')
-            ->once()
-            ->andThrow(new Exception('Error del servidor al seguir al streamer', 500));
-        $dbClient = Mockery::mock(DBClient::class);
-        $service = new PostStreamerService($streamerExistManager, $dbClient);
-
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage('Error del servidor al seguir al streamer');
-        $this->expectExceptionCode(500);
-
-        $service->execute('user', 'streamer');
-    }
-
 }

@@ -15,14 +15,13 @@ class PostStreamerService
         $this->dbClient = $dbClient;
     }
 
-    public function execute(string $userId, string $streamerId): bool
+    public function execute(string $userId, string $streamerId): void
     {
         try {
             $streamerExists = $this->streamerExistManager->getStreamer($streamerId);
             if ($streamerExists) {
                 $this->dbClient->addStreamerToDatabase($userId, $streamerId);
             }
-            return $streamerExists;
         } catch (Exception $exception) {
             throw $exception;
         }

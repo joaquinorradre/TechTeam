@@ -12,23 +12,21 @@ class CreateUserServiceTest extends TestCase
 {
     /**
      * @test
+     * @throws Exception
      */
     public function givenUniqueUsernameCreateUserSuccessfully()
     {
         $dbClientMock = Mockery::mock(DBClient::class);
-
         $dbClientMock
             ->shouldReceive('userExistsInDatabase')
             ->once()
             ->with('nuevo_usuario')
             ->andReturn(false);
-
         $dbClientMock
             ->shouldReceive('createUser')
             ->once()
             ->with('nuevo_usuario', 'nueva_contraseña')
             ->andReturnNull(); // No devuelve nada explícitamente
-
         $createUserService = new CreateUserService($dbClientMock);
 
         $result = $createUserService->createUser('nuevo_usuario', 'nueva_contraseña');
@@ -42,13 +40,11 @@ class CreateUserServiceTest extends TestCase
     public function givenExistingUsernameThrowsConflictException()
     {
         $dbClientMock = Mockery::mock(DBClient::class);
-
         $dbClientMock
             ->shouldReceive('userExistsInDatabase')
             ->once()
             ->with('nuevo_usuario')
             ->andReturn(true);
-
         $createUserService = new CreateUserService($dbClientMock);
 
         $this->expectException(Exception::class);
@@ -64,19 +60,16 @@ class CreateUserServiceTest extends TestCase
     public function givenDatabaseErrorThrowsInternalServerErrorException()
     {
         $dbClientMock = Mockery::mock(DBClient::class);
-
         $dbClientMock
             ->shouldReceive('userExistsInDatabase')
             ->once()
             ->with('nuevo_usuario')
             ->andReturn(false);
-
         $dbClientMock
             ->shouldReceive('createUser')
             ->once()
             ->with('nuevo_usuario', 'nueva_contraseña')
             ->andThrow(new Exception('Error del servidor al crear el usuario', 500));
-
         $createUserService = new CreateUserService($dbClientMock);
 
         $this->expectException(Exception::class);
@@ -85,5 +78,4 @@ class CreateUserServiceTest extends TestCase
 
         $createUserService->createUser('nuevo_usuario', 'nueva_contraseña');
     }
-
 }

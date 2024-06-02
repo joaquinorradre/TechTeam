@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Services;
+namespace Tests\Unit\PostStreamer;
 
 use App\Http\Clients\ApiClient;
 use App\Services\StreamerExistManager;
@@ -14,6 +14,7 @@ class StreamerExistManagerTest extends TestCase
 {
     /**
      * @test
+     * @throws Exception
      */
     public function getStreamerMethodWhenStreamerExists()
     {
@@ -22,18 +23,17 @@ class StreamerExistManagerTest extends TestCase
             ->shouldReceive('getToken')
             ->once()
             ->andReturn('fake_token');
-
         $apiClient = Mockery::mock(ApiClient::class);
         $apiClient
             ->shouldReceive('makeCurlCall')
             ->once()
             ->with('https://api.twitch.tv/helix/users?id=123', 'fake_token')
             ->andReturn([
-            'status' => 200,
-            'response' => json_encode(['data' => [['id' => '123']]]),
-        ]);
-
+                'status' => 200,
+                'response' => json_encode(['data' => [['id' => '123']]]),
+            ]);
         $manager = new StreamerExistManager($twitchTokenService, $apiClient);
+
         $result = $manager->getStreamer('123');
 
         $this->assertTrue($result);
@@ -41,6 +41,7 @@ class StreamerExistManagerTest extends TestCase
 
     /**
      * @test
+     * @throws Exception
      */
     public function getStreamerMethodWhenStreamerDoesNotExist()
     {
@@ -55,11 +56,11 @@ class StreamerExistManagerTest extends TestCase
             ->once()
             ->with('https://api.twitch.tv/helix/users?id=123', 'fake_token')
             ->andReturn([
-            'status' => 200,
-            'response' => json_encode(['data' => []]),
-        ]);
-
+                'status' => 200,
+                'response' => json_encode(['data' => []]),
+            ]);
         $manager = new StreamerExistManager($twitchTokenService, $apiClient);
+
         $result = $manager->getStreamer('123');
 
         $this->assertFalse($result);
@@ -81,7 +82,6 @@ class StreamerExistManagerTest extends TestCase
             ->once()
             ->with('https://api.twitch.tv/helix/users?id=123', 'fake_token')
             ->andThrow(new Exception('Test Exception', 500));
-
         $manager = new StreamerExistManager($twitchTokenService, $apiClient);
 
         $this->expectException(Exception::class);

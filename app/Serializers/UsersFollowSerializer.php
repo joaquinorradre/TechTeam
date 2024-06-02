@@ -4,17 +4,16 @@ namespace App\Serializers;
 
 class UsersFollowSerializer
 {
-    public static function serialize(array $userData): array
+    public static function serialize(array $data): array
     {
         $serializedData = [];
 
-        foreach ($userData as $user) {
+        foreach ($data as $username => $streamers) {
             $serializedData[] = [
-                'username' => $user['username'],
-                'followedStreamers' => $user['streamerLogins'],
+                'username' => $username,
+                'followedStreamers' => !empty($streamers) ? $streamers : []
             ];
         }
-
         return $serializedData;
     }
 }

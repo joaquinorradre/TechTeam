@@ -15,18 +15,17 @@ class PostStreamerController extends Controller
         $this->postStreamerService = $postStreamerService;
     }
 
-    public function __invoke(Request $request)
+    public function __invoke(Request $request): JsonResponse
     {
         $userId = $request->input('userId');
         $streamerId = $request->input('streamerId');
-        $result = $this->postStreamerService->execute($userId, $streamerId);
-
-        if ($result) {
+        try {
+            $this->postStreamerService->execute($userId, $streamerId);
             $response = ["message" => "Ahora sigues a $streamerId"];
             return new JsonResponse($response, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        } catch (\Exception $exception) {
+            $response = ["message" => $exception->getMessage()];
+            return new JsonResponse($response, $exception->getCode(), [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         }
-
-        $response = ["message" => "No sigues a $streamerId"];
-        return new JsonResponse($response, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
 }

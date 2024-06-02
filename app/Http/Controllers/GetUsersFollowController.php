@@ -17,7 +17,7 @@ class GetUsersFollowController extends Controller
         $this->userListDataManager = $userListDataManager;
     }
 
-    /**s
+    /**
      * Handle the incoming request.
      */
     public function __invoke(): JsonResponse

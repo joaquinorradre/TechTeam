@@ -34,7 +34,9 @@ class DBClient
         ]);
     }
 
-
+    /**
+     * @throws Exception
+     */
     public function addStreamerToDatabase(string $userId, string $streamerId): void
     {
         try {
@@ -48,7 +50,7 @@ class DBClient
                     throw new Exception('El usuario ya está siguiendo al streamer', Response::HTTP_CONFLICT);
                 }
             } else {
-                throw new Exception('El usuario ' . $userId . ' especificado no existe en la API', Response::HTTP_NOT_FOUND);
+                throw new Exception('El usuario ' . $userId . ' especificado no existe en la BBDD', Response::HTTP_NOT_FOUND);
             }
         } catch (Exception $exception) {
             if ($exception->getCode() === Response::HTTP_CONFLICT || $exception->getCode() === Response::HTTP_NOT_FOUND) {
@@ -69,13 +71,20 @@ class DBClient
         return $usersWithFollowedStreamers->toArray();
     }
 
+    /**
+     * @throws Exception
+     */
     public function getFollowedStreamers(string $userId): array
     {
-        return DB::table('user_follow')
-            ->where('username', $userId)
-            ->select('streamerId')
-            ->get()
-            ->toArray();
+        if ($this->userExistsInDatabase($userId)) {
+            return DB::table('user_follow')
+                ->where('username', $userId)
+                ->select('streamerId')
+                ->get()
+                ->toArray();
+        } else {
+            throw new Exception('El usuario especificado ' . $userId . ' no existe', Response::HTTP_NOT_FOUND);
+        }
     }
         
     public function fetchGames()
@@ -194,11 +203,14 @@ class DBClient
             ->get();
     }
 
+    /**
+     * @throws Exception
+     */
     public function createUser(string $username, string $password): void
     {
         try {
             DB::table('User')->insert([
-                'name' => $username,
+                'username' => $username,
                 'password' => $password,
             ]);
         } catch (Exception $exception) {
@@ -208,7 +220,7 @@ class DBClient
 
     public function userExistsInDatabase(string $username): bool
     {
-        return DB::table('User')->where('name', $username)->exists();
+        return DB::table('User')->where('username', $username)->exists();
     }
 
 }

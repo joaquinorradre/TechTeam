@@ -18,6 +18,7 @@ class TimelineDataManagerTest extends TestCase
 
     /**
      * @test
+     * @throws \Exception
      */
     public function givenAValidUserIdGetTimeline()
     {
@@ -68,6 +69,7 @@ class TimelineDataManagerTest extends TestCase
 
     /**
      * @test
+     * @throws \Exception
      */
     public function givenAnInvalidUserIdGetTimelineThrowsException()
     {

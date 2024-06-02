@@ -13,14 +13,14 @@ use Illuminate\Http\Request;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 
-class GetUsersFollowControllerTest extends TestCase
+class GetStreamsControllerTest extends TestCase
 {
     /**
      * @test
      */
     public function getStreams()
     {
-        $request = Request::create('/analytics/streams', 'GET', ['parametro' => 'valor']);
+        $request = Request::create('/analytics/streams', 'GET');
         $apiClientMock = Mockery::mock(ApiClient::class);
         $twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
         $dbClientMock = Mockery::mock(DbClient::class);
@@ -40,10 +40,10 @@ class GetUsersFollowControllerTest extends TestCase
             ->shouldReceive('serialize')
             ->once()
             ->with([['title' => 'Stream 1', 'user_name' => 'User 1']])
-            ->andReturn([['title' => 'Stream 1', 'user_name' => 'User 1',]]);
+            ->andReturn([['title' => 'Stream 1', 'user_name' => 'User 1']]);
         $streamsDataManager = new StreamsDataManager($apiClientMock,$twitchTokenServiceMock);
         $getStreamsService = new GetStreamsService($streamsDataManager);
-        $getStreamsController = new GetStreamsController($getStreamsService,$streamsDataSerializerMock);
+        $getStreamsController = new GetStreamsController($getStreamsService, $streamsDataSerializerMock);
 
         $result = $getStreamsController->__invoke($request);
 

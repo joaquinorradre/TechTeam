@@ -80,6 +80,9 @@ class TopsOfTheTopsDataManager
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function updateGames($gamesResponse, $since): void
     {
         $games = array_slice($gamesResponse['data'], 0, 3);
