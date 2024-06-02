@@ -88,4 +88,10 @@ class GetTopOfTheTopsControllerTest extends TestCase
             $response->getContent()
         );
     }
+
+    protected function tearDown(): void
+    {
+        Mockery::close();
+        parent::tearDown();
+    }
 }
