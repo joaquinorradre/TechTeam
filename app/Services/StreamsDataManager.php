@@ -43,8 +43,4 @@ class StreamsDataManager
             throw new Exception($exception->getMessage(), $exception->getCode());
         }
     }
-
-
-
-
 }
