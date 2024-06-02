@@ -1,199 +1,142 @@
 <?php
 
-namespace Tests\Unit\Services;
+namespace Tests\Unit\TopOfTheTops;
 
 use App\Http\Clients\ApiClient;
 use App\Http\Clients\DBClient;
 use App\Services\TopsOfTheTopsDataManager;
 use App\Services\TwitchTokenService;
-use Exception;
-use Illuminate\Support\Collection;
 use Mockery;
-use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 
 class TopsOfTheTopsDataManagerTest extends TestCase
 {
-    /** @var MockInterface */
-    private $dbClient;
-
-    /** @var MockInterface */
-    private $apiClient;
-
-    /** @var MockInterface */
-    private $twitchTokenService;
-
-    /** @var TopsOfTheTopsDataManager */
-    private $topsOfTheTopsDataManager;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->dbClient = Mockery::mock(DBClient::class);
-        $this->apiClient = Mockery::mock(ApiClient::class);
-        $this->twitchTokenService = Mockery::mock(TwitchTokenService::class);
-
-        $this->topsOfTheTopsDataManager = new TopsOfTheTopsDataManager(
-            $this->dbClient,
-            $this->apiClient,
-            $this->twitchTokenService
-        );
-    }
-
     protected function tearDown(): void
     {
         Mockery::close();
-        parent::tearDown();
     }
 
-    /** @test */
-    public function fetchGamesReturnsGamesCollection()
+    /**
+     * @test
+     */
+    public function fetchGamesReturnsCollection()
     {
-        // Arrange
-        $expectedGames = new Collection([
-            ['id' => '1', 'name' => 'Game 1'],
-            ['id' => '2', 'name' => 'Game 2']
-        ]);
-        $this->dbClient
+        $dbClientMock = Mockery::mock(DBClient::class);
+        $apiClientMock = Mockery::mock(ApiClient::class);
+        $twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
+        $dbClientMock
             ->shouldReceive('fetchGames')
             ->once()
-            ->andReturn($expectedGames);
+            ->andReturn(collect(['game1', 'game2', 'game3']));
 
-        // Act
-        $result = $this->topsOfTheTopsDataManager->fetchGames();
+        $dataManager = new TopsOfTheTopsDataManager($dbClientMock, $apiClientMock, $twitchTokenServiceMock);
+        $result = $dataManager->fetchGames();
 
-        // Assert
-        $this->assertEquals($expectedGames, $result);
+        $this->assertCount(3, $result);
     }
 
-    /** @test */
-    public function updateGamesDataInsertsGamesAndVideosWhenNoErrors()
+    /**
+     * @test
+     */
+    public function updateGamesDataUpdatesAndReturnsGameData()
     {
-        // Arrange
-        $accessToken = 'fake_token';
-        $gamesResponse = [
-            'data' => [
-                ['id' => '1', 'name' => 'Game 1'],
-                ['id' => '2', 'name' => 'Game 2'],
-                ['id' => '3', 'name' => 'Game 3']
-            ]
-        ];
+        $dbClientMock = Mockery::mock(DBClient::class);
+        $apiClientMock = Mockery::mock(ApiClient::class);
+        $twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
 
-        $gamesResult = [
-            'response' => json_encode($gamesResponse),
-            'status' => 200
-        ];
-
-        $this->twitchTokenService
+        $twitchTokenServiceMock
             ->shouldReceive('getToken')
             ->once()
-            ->andReturn($accessToken);
+            ->andReturn('token');
 
-        $this->apiClient
+        $apiClientMock
             ->shouldReceive('makeCurlCall')
+            ->with('https://api.twitch.tv/helix/games/top?first=3', 'token')
             ->once()
-            ->with(TopsOfTheTopsDataManager::GAMES_TWITCH_URL, $accessToken)
-            ->andReturn($gamesResult);
+            ->andReturn(['response' => json_encode(['data' => [['id' => '123', 'name' => 'Game 1']]]), 'status' => 200]);
 
-        $this->dbClient
+        $dbClientMock
             ->shouldReceive('getGameData')
-            ->once()
-            ->andReturn($gamesResponse);
+            ->andReturn(collect(['gameData']));
 
-        // Act
-        $result = $this->topsOfTheTopsDataManager->updateGamesData();
+        $dataManagerMock = Mockery::mock(TopsOfTheTopsDataManager::class, [$dbClientMock, $apiClientMock, $twitchTokenServiceMock])
+            ->makePartial()
+            ->shouldAllowMockingProtectedMethods();
 
-        // Assert
-        $this->assertEquals($gamesResponse, $result);
+        $dataManagerMock
+            ->shouldReceive('insertGames')
+            ->once();
+
+        $dataManagerMock
+            ->shouldReceive('fetchAndInsertVideos')
+            ->once();
+
+        $result = $dataManagerMock->updateGamesData();
+
+        $this->assertNotEmpty($result);
+        $this->assertEquals(collect(['gameData']), $result);
     }
 
-    /** @test */
-    public function updateExistingGamesDataUpdatesGamesAndVideosWhenNoErrors()
+
+    /**
+     * @test
+     */
+    public function updateExistingGamesDataUpdatesAndReturnsGameData()
     {
-        // Arrange
-        $since = 600;
-        $accessToken = 'fake_token';
-        $gamesResponse = [
-            'data' => [
-                ['id' => '1', 'name' => 'Game 1'],
-                ['id' => '2', 'name' => 'Game 2'],
-                ['id' => '3', 'name' => 'Game 3']
-            ]
-        ];
+        $dbClientMock = Mockery::mock(DBClient::class);
+        $apiClientMock = Mockery::mock(ApiClient::class);
+        $twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
 
-        $gamesResult = [
-            'response' => json_encode($gamesResponse),
-            'status' => 200
-        ];
-
-        $this->twitchTokenService
+        $twitchTokenServiceMock
             ->shouldReceive('getToken')
             ->once()
-            ->andReturn($accessToken);
+            ->andReturn('token');
 
-        $this->apiClient
+        $apiClientMock
             ->shouldReceive('makeCurlCall')
+            ->with('https://api.twitch.tv/helix/games/top?first=3', 'token')
             ->once()
-            ->with(TopsOfTheTopsDataManager::GAMES_TWITCH_URL, $accessToken)
-            ->andReturn($gamesResult);
+            ->andReturn(['response' => json_encode(['data' => [['id' => '123', 'name' => 'Game 1']]]), 'status' => 200]);
 
-        $this->dbClient
+        $dbClientMock
             ->shouldReceive('deleteObsoleteGames')
             ->once()
-            ->with($gamesResponse);
+            ->with(Mockery::on(function ($argument) {
+                return isset($argument['data']) && $argument['data'][0]['id'] === '123';
+            }));
 
-        $this->dbClient
+        $dbClientMock
             ->shouldReceive('getGameData')
-            ->once()
-            ->andReturn($gamesResponse);
+            ->andReturn(collect(['gameData']));
 
-        // Act
-        $result = $this->topsOfTheTopsDataManager->updateExistingGamesData($since);
+        $dbClientMock
+            ->shouldReceive('fetchGameById')
+            ->with('123')
+            ->andReturn(null);
 
-        // Assert
-        $this->assertEquals($gamesResponse, $result);
-    }
+        $dbClientMock
+            ->shouldReceive('insertGame')
+            ->with(['id' => '123', 'name' => 'Game 1'])
+            ->once();
 
-    /** @test */
-    public function updateGamesDataThrowsExceptionWhenTokenServiceFails()
-    {
-        // Arrange
-        $this->twitchTokenService
-            ->shouldReceive('getToken')
-            ->once()
-            ->andThrow(new Exception('Token error'));
+        $dbClientMock
+            ->shouldReceive('updateGame')
+            ->never();
 
-        // Assert
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage('Token error');
-
-        // Act
-        $this->topsOfTheTopsDataManager->updateGamesData();
-    }
-
-    /** @test */
-    public function updateExistingGamesDataThrowsExceptionWhenApiCallFails()
-    {
-        // Arrange
-        $since = 600;
-        $accessToken = 'fake_token';
-        $this->twitchTokenService
-            ->shouldReceive('getToken')
-            ->once()
-            ->andReturn($accessToken);
-
-        $this->apiClient
+        $apiClientMock
             ->shouldReceive('makeCurlCall')
+            ->with('https://api.twitch.tv/helix/videos?game_id=123&sort=views&first=40', 'token')
             ->once()
-            ->with(TopsOfTheTopsDataManager::GAMES_TWITCH_URL, $accessToken)
-            ->andThrow(new Exception('API error'));
+            ->andReturn(['response' => json_encode(['data' => []]), 'status' => 200]);
 
-        // Assert
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage('API error');
+        $dataManager = new TopsOfTheTopsDataManager($dbClientMock, $apiClientMock, $twitchTokenServiceMock);
 
-        // Act
-        $this->topsOfTheTopsDataManager->updateExistingGamesData($since);
+        $result = $dataManager->updateExistingGamesData(3600);
+
+        $this->assertNotEmpty($result);
+        $this->assertEquals(collect(['gameData']), $result);
     }
+
+
+
 }

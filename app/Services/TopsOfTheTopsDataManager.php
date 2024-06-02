@@ -80,7 +80,7 @@ class TopsOfTheTopsDataManager
         }
     }
 
-    private function updateGames($gamesResponse, $since): void
+    public function updateGames($gamesResponse, $since): void
     {
         $games = array_slice($gamesResponse['data'], 0, 3);
         foreach ($games as $game) {
@@ -97,7 +97,7 @@ class TopsOfTheTopsDataManager
     /**
      * @throws Exception
      */
-    private function updateExistingGame($gamesResponse, $existingId, $since): void
+    public function updateExistingGame($gamesResponse, $existingId, $since): void
     {
         $timeDiffInSeconds = $this->obtenerTiempoDesdeUltimaActualizacion($existingId);
         if ($timeDiffInSeconds === null || $timeDiffInSeconds > $since) {
@@ -109,7 +109,7 @@ class TopsOfTheTopsDataManager
     /**
      * @throws Exception
      */
-    private function updateVideos($gamesResponse, $accessToken): void
+    public function updateVideos($gamesResponse, $accessToken): void
     {
         $games = array_slice($gamesResponse['data'], 0, 3);
         foreach ($games as $game) {
