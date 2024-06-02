@@ -129,4 +129,21 @@ class DBClient
             })
             ->get();
     }
+
+    public function createUser(string $username, string $password): void
+    {
+        try {
+            DB::table('User')->insert([
+                'name' => $username,
+                'password' => $password,
+            ]);
+        } catch (Exception $exception) {
+            throw new Exception('Error del servidor al crear el usuario', 500);
+        }
+    }
+
+    public function userExistsInDatabase(string $username): bool
+    {
+        return DB::table('User')->where('name', $username)->exists();
+    }
 }
