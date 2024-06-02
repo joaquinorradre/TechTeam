@@ -5,8 +5,8 @@ namespace Tests\Feature;
 use App\Http\Clients\ApiClient;
 use App\Http\Clients\DBClient;
 use App\Http\Controllers\GetUsersController;
-use App\Http\Requests\GetUsersRequest;
-use App\Serializers\UserDataSerializer;
+use App\Http\Requests\GetTimelineRequest;
+use App\Serializers\UserListSerializer;
 use App\Services\GetUsersService;
 use App\Services\UserDataManager;
 use App\Services\TwitchTokenService;
@@ -20,13 +20,13 @@ class GetUsersControllerTest extends TestCase
      */
     public function getUsers()
     {
-        $request = GetUsersRequest::create('/analytics/users', 'GET', ['id' => 'valor']);
+        $request = GetTimelineRequest::create('/analytics/users', 'GET', ['id' => 'valor']);
 
         $apiClientMock = Mockery::mock(ApiClient::class);
         $userDataManagerMock = Mockery::mock(UserDataManager::class);
         $twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
         $dbClientMock = Mockery::mock(DbClient::class);
-        $userDataSerializerMock = Mockery::mock(UserDataSerializer::class);
+        $userDataSerializerMock = Mockery::mock(UserListSerializer::class);
         $getUsersServiceMock = Mockery::mock(GetUsersService::class);
 
         $getUsersServiceMock

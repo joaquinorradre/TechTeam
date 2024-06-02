@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Http\Requests\GetTimelineRequest;
 use App\Http\Requests\GetUsersRequest;
 use Illuminate\Foundation\Testing\TestCase;
 use Illuminate\Support\Facades\Validator;

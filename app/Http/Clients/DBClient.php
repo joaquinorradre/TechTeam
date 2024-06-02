@@ -34,6 +34,7 @@ class DBClient
         ]);
     }
 
+
     public function addStreamerToDatabase(string $userId, string $streamerId): void
     {
         try {
@@ -60,12 +61,21 @@ class DBClient
 
     public function getUsersWithFollowedStreamers(): array
     {
-        $users = DB::table('User')
+        $usersWithFollowedStreamers = DB::table('User')
             ->leftJoin('user_follow', 'User.username', '=', 'user_follow.username')
             ->select('User.username', 'user_follow.streamerId')
             ->get();
 
-        return $users->toArray();
+        return $usersWithFollowedStreamers->toArray();
+    }
+
+    public function getFollowedStreamers(string $userId): array
+    {
+        return DB::table('user_follow')
+            ->where('username', $userId)
+            ->select('streamerId')
+            ->get()
+            ->toArray();
     }
         
     public function fetchGames()
@@ -200,5 +210,6 @@ class DBClient
     {
         return DB::table('User')->where('name', $username)->exists();
     }
+
 }
 
