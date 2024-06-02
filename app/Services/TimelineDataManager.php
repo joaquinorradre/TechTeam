@@ -3,64 +3,66 @@
 namespace App\Services;
 
 use App\Http\Clients\ApiClient;
+use App\Http\Clients\DBClient;
+use App\Serializers\TimelineSerializer;
+use App\Serializers\UserListSerializer;
 use Exception;
-use Symfony\Component\HttpFoundation\Response;
 
 class TimelineDataManager
 {
-    private ApiClient $apiClient;
+    private DBClient $dBClient;
     private TwitchTokenService $twitchTokenService;
-    private const string API_FOLLOWED_URL = 'https://api.twitch.tv/helix/channels/followed';
-    private const string API_STREAMS_URL = 'https://api.twitch.tv/helix/streams';
+    private ApiClient $apiClient;
 
-    public function __construct(ApiClient $apiClient, TwitchTokenService $twitchTokenService)
+    public function __construct(DBClient $dBClient, TwitchTokenService $twitchTokenService, ApiClient $apiClient)
     {
-        $this->apiClient = $apiClient;
+        $this->dBClient = $dBClient;
         $this->twitchTokenService = $twitchTokenService;
+        $this->apiClient = $apiClient;
     }
 
     /**
      * @throws Exception
      */
-    public function getTimeline(string $userId): string
+    public function getTimeline(string $userId): array
     {
         try {
             $twitchToken = $this->twitchTokenService->getToken();
-        } catch (Exception $exception) {
-            throw new Exception($exception->getMessage(), $exception->getCode());
-        }
 
-        try {
-            $followedResult = $this->apiClient->makeCurlCall(self::API_FOLLOWED_URL . "?user_id=$userId", $twitchToken);
-            $followedResponse = json_decode($followedResult['response'], true);
-            var_dump($followedResponse);
-
-            if (!isset($followedResponse['data'])) {
-                throw new Exception('No se pudieron obtener los broadcasters seguidos.', Response::HTTP_INTERNAL_SERVER_ERROR);
+            $followedStreamers = $this->dBClient->getFollowedStreamers($userId);
+            if (empty($followedStreamers)) {
+                return [];
             }
 
-            $followedIds = array_column($followedResponse['data'], 'broadcaster_id');
+            $allVideos = [];
 
-            $streams = array();
+            foreach ($followedStreamers as $streamer) {
+                $queryParams = http_build_query(['user_id' => $streamer->streamerId, 'first' => 5]);
+                $response = $this->apiClient->makeCurlCall("https://api.twitch.tv/helix/streams?$queryParams", $twitchToken);
 
-            foreach ($followedIds as $broadcasterId) {
+                if ($response['status'] !== 200) {
+                    throw new Exception('Error al obtener los videos del streamer', $response['status']);
+                }
 
-                $streamsResult = $this->apiClient->makeCurlCall(self::API_STREAMS_URL . "?user_id=$broadcasterId&first=5", $twitchToken);
-                $streamsResponse = json_decode($streamsResult['response'], true);
+                $videosData = json_decode($response['response'], true)['data'];
 
-                if (isset($streamsResponse['data'])) {
-                    $streams = array_merge($streams, $streamsResponse['data']);
+                foreach ($videosData as $video) {
+                    $allVideos[] = [
+                        'streamerId' => $video['user_id'],
+                        'streamerName' => $video['user_name'],
+                        'title' => $video['title'],
+                        'game' => $video['game_name'],
+                        'viewerCount' => $video['viewer_count'],
+                        'startedAt' => $video['created_at']
+                    ];
                 }
             }
 
-            usort($streams, function($a, $b) {
-                return strtotime($b['started_at']) - strtotime($a['started_at']);
-            });
+            usort($allVideos, fn($a, $b) => strtotime($b['startedAt']) - strtotime($a['startedAt']));
 
-            return json_encode($streams);
+            return UserListSerializer::serialize($allVideos);
         } catch (Exception $exception) {
-            throw new Exception($exception->getMessage(), $exception->getCode());
+            throw new Exception("Error al obtener el timeline: " . $exception->getMessage());
         }
     }
-
 }

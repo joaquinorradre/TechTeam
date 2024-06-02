@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\GetUsersRequest;
-use App\Serializers\UserDataSerializer;
+use App\Http\Requests\GetTimelineRequest;
+use App\Serializers\UserListSerializer;
 use App\Services\GetUsersService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
 class GetUsersController extends Controller
 {
-    private UserDataSerializer $userSerializer;
+    private UserListSerializer $userSerializer;
     private GetUsersService $getUsersService;
 
 
-    public function __construct(GetUsersService $getUsersService, UserDataSerializer $userSerializer)
+    public function __construct(GetUsersService $getUsersService, UserListSerializer $userSerializer)
     {
         $this->getUsersService = $getUsersService;
         $this->userSerializer = $userSerializer;
@@ -23,7 +23,7 @@ class GetUsersController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(GetUsersRequest $request): JsonResponse
+    public function __invoke(GetTimelineRequest $request): JsonResponse
     {
         $userId = $request->input('id');
 

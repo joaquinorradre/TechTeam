@@ -22,6 +22,9 @@ class UserDataManager
 
     }
 
+    /**
+     * @throws Exception
+     */
     public function getUserData($userId): string
     {
         try {

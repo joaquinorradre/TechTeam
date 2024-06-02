@@ -18,15 +18,7 @@ class GetTimelineService
      */
     public function execute($userId)
     {
-        $timelineResponse = $this->timelineDataManager->getTimeline($userId);
-
-        $response = json_decode($timelineResponse, true);
-
-        if ($response && isset($response['data'])) {
-            return $response['data'];
-        } else {
-            return [];
-        }
+        return $this->timelineDataManager->getTimeline($userId);
     }
 
 }

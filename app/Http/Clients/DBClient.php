@@ -35,4 +35,23 @@ class DBClient
 
     }
 
+    public function getUsersWithFollowedStreamers(): array
+    {
+        $usersWithFollowedStreamers = DB::table('User')
+            ->leftJoin('user_follow', 'User.username', '=', 'user_follow.username')
+            ->select('User.username', 'user_follow.streamerId')
+            ->get();
+
+        return $usersWithFollowedStreamers->toArray();
+    }
+
+    public function getFollowedStreamers(string $userId): array
+    {
+        return DB::table('user_follow')
+            ->where('username', $userId)
+            ->select('streamerId')
+            ->get()
+            ->toArray();
+    }
+
 }

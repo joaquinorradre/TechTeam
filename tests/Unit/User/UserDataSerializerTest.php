@@ -3,7 +3,7 @@
 
 namespace Tests\Unit;
 
-use App\Serializers\UserDataSerializer;
+use App\Serializers\UserListSerializer;
 use PHPUnit\Framework\TestCase;
 
 class UserDataSerializerTest extends TestCase
@@ -13,7 +13,7 @@ class UserDataSerializerTest extends TestCase
      */
     public function serializationWithValidData()
     {
-        $serializer = new UserDataSerializer();
+        $serializer = new UserListSerializer();
 
         $users = [
             ['id' => 'id', 'login' => 'login', 'display_name' => 'display_name', 'type' => 'type', 'broadcaster_type' => 'broadcaster_type', 'description' => 'description', 'profile_image_url' => 'profile_image_url', 'offline_image_url' => 'offline_image_url','view_count' => 'view_count','created_at' => 'created_at',],
