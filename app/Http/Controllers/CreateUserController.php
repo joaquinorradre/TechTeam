@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Http\Requests\CreateUserRequest;
 use App\Services\CreateUserService;
 use Illuminate\Http\JsonResponse;
