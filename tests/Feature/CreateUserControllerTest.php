@@ -6,7 +6,7 @@ use App\Services\CreateUserManager;
 class CreateUserControllerTest extends TestCase
 {
     /**
-     * @Test
+     * @test
      */
     public function createUserSuccesfully()
     {
@@ -34,7 +34,7 @@ class CreateUserControllerTest extends TestCase
     }
 
     /**
-     * @Test
+     * @test
      */
     public function createExistingUserReturnsConflict()
     {
@@ -62,7 +62,7 @@ class CreateUserControllerTest extends TestCase
     }
 
     /**
-     * @Test
+     * @test
      */
     public function createUserReturnsInternalError()
     {
