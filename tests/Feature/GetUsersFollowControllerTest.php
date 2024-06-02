@@ -65,4 +65,5 @@ class GetUsersFollowControllerTest extends TestCase
 
         $this->assertNotEmpty($result);
     }
+
 }

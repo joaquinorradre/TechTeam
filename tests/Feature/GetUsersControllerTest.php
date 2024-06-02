@@ -67,4 +67,5 @@ class GetUsersControllerTest extends TestCase
 
         $this->assertNotEmpty($result);
     }
+
 }

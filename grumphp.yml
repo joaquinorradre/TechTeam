@@ -19,9 +19,9 @@ grumphp:
               - 'rama_joaquin'
               - 'rama_helen'
               - 'rama_action'
+              - 'endpoint2y3'
               - 'rama_raul'
               - 'endpoint5'
-              - 'endpoint2y3'
               - 'endpoint1'
 
         phpcs:
