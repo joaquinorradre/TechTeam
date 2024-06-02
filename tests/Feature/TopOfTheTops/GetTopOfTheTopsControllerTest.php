@@ -95,5 +95,4 @@ class GetTopOfTheTopsControllerTest extends TestCase
         parent::tearDown();
     }
 
-
 }
