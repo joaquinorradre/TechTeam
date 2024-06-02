@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class TopsOfTheTopsDataManager
 {
-    private const GAMES_TWITCH_URL = 'https://api.twitch.tv/helix/games/top?first=3';
+    public const GAMES_TWITCH_URL = 'https://api.twitch.tv/helix/games/top?first=3';
     private DBClient $dbClient;
     private ApiClient $apiClient;
     private TwitchTokenService $twitchTokenService;
