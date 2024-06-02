@@ -15,6 +15,7 @@ use Mockery;
 
 class GetStreamsControllerTest extends TestCase
 {
+
     /**
      * @test
      */
