@@ -86,9 +86,4 @@ class CreateUserServiceTest extends TestCase
         $createUserService->createUser('nuevo_usuario', 'nueva_contraseña');
     }
 
-    protected function tearDown(): void
-    {
-        Mockery::close();
-        parent::tearDown();
-    }
 }

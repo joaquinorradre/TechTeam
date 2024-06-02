@@ -11,10 +11,6 @@ use PHPUnit\Framework\TestCase;
 
 class TopsOfTheTopsDataManagerTest extends TestCase
 {
-    protected function tearDown(): void
-    {
-        Mockery::close();
-    }
 
     /**
      * @test

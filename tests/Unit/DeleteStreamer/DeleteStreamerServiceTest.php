@@ -10,10 +10,6 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Response;
 class DeleteStreamerServiceTest extends TestCase
 {
-    protected function tearDown(): void
-    {
-        Mockery::close();
-    }
 
     /**
      * @test

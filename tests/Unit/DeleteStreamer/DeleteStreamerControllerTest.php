@@ -11,10 +11,6 @@ use PHPUnit\Framework\TestCase;
 
 class DeleteStreamerControllerTest extends TestCase
 {
-    protected function tearDown(): void
-    {
-        Mockery::close();
-    }
 
     /**
      * @test

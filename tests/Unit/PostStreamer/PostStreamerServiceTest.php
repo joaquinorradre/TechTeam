@@ -11,11 +11,6 @@ use PHPUnit\Framework\TestCase;
 
 class PostStreamerServiceTest extends TestCase
 {
-    protected function tearDown(): void
-    {
-        Mockery::close();
-    }
-
     /**
      * @test
      */

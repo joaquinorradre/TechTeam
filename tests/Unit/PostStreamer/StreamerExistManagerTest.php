@@ -12,11 +12,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class StreamerExistManagerTest extends TestCase
 {
-    protected function tearDown(): void
-    {
-        Mockery::close();
-    }
-
     /**
      * @test
      */
