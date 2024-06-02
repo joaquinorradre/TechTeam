@@ -7,7 +7,6 @@ use App\Http\Clients\DBClient;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
 
-
 class TwitchTokenService
 {
     private DBClient $dbClient;
@@ -45,5 +44,4 @@ class TwitchTokenService
             throw new Exception('No se puede establecer conexión con Twitch en este momento', Response::HTTP_SERVICE_UNAVAILABLE);
         }
     }
-
 }

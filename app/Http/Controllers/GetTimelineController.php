@@ -10,6 +10,7 @@ use Illuminate\Http\JsonResponse;
 
 class GetTimelineController
 {
+
     private GetTimelineService $getTimelineService;
     private TimelineDataSerializer $TimelineSerializer;
     public function __construct(GetTimelineService $getTimelineService, TimelineDataSerializer $TimelineSerializer)
@@ -33,3 +34,4 @@ class GetTimelineController
         }
     }
 }
+

@@ -18,7 +18,7 @@ class GetUsersControllerTest extends TestCase
     /**
      * @test
      */
-    public function getUsersControllerIntegrationTest()
+    public function getUsers()
     {
         $request = GetTimelineRequest::create('/analytics/users', 'GET', ['id' => 'valor']);
 
@@ -67,4 +67,5 @@ class GetUsersControllerTest extends TestCase
 
         $this->assertNotEmpty($result);
     }
+
 }
