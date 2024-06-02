@@ -1,10 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
-class CreateUserController
-{
-
 use App\Http\Requests\CreateUserRequest;
 use App\Services\CreateUserService;
 use Illuminate\Http\JsonResponse;
@@ -60,4 +56,3 @@ class CreateUserController extends Controller
         }
     }
 }
-
