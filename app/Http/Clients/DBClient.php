@@ -54,6 +54,9 @@ class DBClient
                 throw $exception;
             } else {
                 throw new Exception('Error del servidor al seguir al streamer', Response::HTTP_INTERNAL_SERVER_ERROR);
+            }
+        }
+    }
 
     public function getUsersWithFollowedStreamers(): array
     {
@@ -138,11 +141,6 @@ class DBClient
             }
             throw new Exception('Error del servidor al dejar de seguir al streamer', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-    }
-
-    private function userExistsInDatabase(string $userId): bool
-    {
-        return DB::table('users')->where('name', $userId)->exists();
     }
 
     private function userAlreadyFollowingStreamer(string $userId, string $streamerId): bool
