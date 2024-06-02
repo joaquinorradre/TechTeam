@@ -10,59 +10,51 @@ use Exception;
 
 class TimelineDataManager
 {
-    private DBClient $dBClient;
-    private TwitchTokenService $twitchTokenService;
-    private ApiClient $apiClient;
+    protected $dbClient;
+    protected $twitchTokenService;
+    protected $apiClient;
 
-    public function __construct(DBClient $dBClient, TwitchTokenService $twitchTokenService, ApiClient $apiClient)
+    public function __construct(DBClient $dbClient, TwitchTokenService $twitchTokenService, ApiClient $apiClient)
     {
-        $this->dBClient = $dBClient;
+        $this->dbClient = $dbClient;
         $this->twitchTokenService = $twitchTokenService;
         $this->apiClient = $apiClient;
     }
 
-    /**
-     * @throws Exception
-     */
-    public function getTimeline(string $userId): array
+    public function getTimeline(string $userId)
     {
         try {
-            $twitchToken = $this->twitchTokenService->getToken();
+            $token = $this->twitchTokenService->getToken();
+            $streamers = $this->dbClient->getFollowedStreamers($userId);
 
-            $followedStreamers = $this->dBClient->getFollowedStreamers($userId);
-            if (empty($followedStreamers)) {
-                return [];
-            }
+            $timeline = [];
 
-            $allVideos = [];
+            foreach ($streamers as $streamer) {
+                $response = $this->apiClient->makeCurlCall(
+                    "https://api.twitch.tv/helix/streams?user_id={$streamer->streamerId}&first=5",
+                    $token
+                );
 
-            foreach ($followedStreamers as $streamer) {
-                $queryParams = http_build_query(['user_id' => $streamer->streamerId, 'first' => 5]);
-                $response = $this->apiClient->makeCurlCall("https://api.twitch.tv/helix/streams?$queryParams", $twitchToken);
-
-                if ($response['status'] !== 200) {
-                    throw new Exception('Error al obtener los videos del streamer', $response['status']);
-                }
-
-                $videosData = json_decode($response['response'], true)['data'];
-
-                foreach ($videosData as $video) {
-                    $allVideos[] = [
-                        'streamerId' => $video['user_id'],
-                        'streamerName' => $video['user_name'],
-                        'title' => $video['title'],
-                        'game' => $video['game_name'],
-                        'viewerCount' => $video['viewer_count'],
-                        'startedAt' => $video['created_at']
-                    ];
+                if ($response['status'] === 200) {
+                    $data = json_decode($response['response'], true);
+                    foreach ($data['data'] as $stream) {
+                        $timeline[] = [
+                            'streamerId' => $stream['user_id'],
+                            'userName' => $stream['user_name'],
+                            'title' => $stream['title'],
+                            'gameName' => $stream['game_name'],
+                            'viewerCount' => $stream['viewer_count'],
+                            'startedAt' => $stream['started_at'],
+                        ];
+                    }
+                } else {
+                    throw new Exception('Error al obtener los videos del streamer');
                 }
             }
 
-            usort($allVideos, fn($a, $b) => strtotime($b['startedAt']) - strtotime($a['startedAt']));
-
-            return UserListSerializer::serialize($allVideos);
-        } catch (Exception $exception) {
-            throw new Exception("Error al obtener el timeline: " . $exception->getMessage());
+            return $timeline;
+        } catch (Exception $e) {
+            throw new Exception('Error al obtener el timeline: ' . $e->getMessage());
         }
     }
 }
