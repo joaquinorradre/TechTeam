@@ -21,6 +21,13 @@ class CreateUserController extends Controller
         $username = $request->input('username');
         $password = $request->input('password');
 
+        if (empty($username) || empty($password)) {
+            return response()->json([
+                'error' => 'Bad Request',
+                'message' => 'Parámetros inválidos'
+            ], 400);
+        }
+
         try {
             $this->createUserService->createUser($username, $password);
             return response()->json([
@@ -34,17 +41,19 @@ class CreateUserController extends Controller
                     'error' => 'Conflict',
                     'message' => 'El nombre de usuario ya existe'
                 ], $status);
-            } elseif ($status === 500) {
+            }
+
+            if ($status === 500) {
                 return response()->json([
                     'error' => 'Internal Server Error',
                     'message' => 'Error del servidor al crear el usuario'
                 ], $status);
-            } else {
-                return response()->json([
-                    'error' => 'Bad Request',
-                    'message' => 'Parámetros inválidos'
-                ], 400);
             }
+
+            return response()->json([
+                'error' => 'Bad Request',
+                'message' => 'Parámetros inválidos'
+            ], 400);
         }
     }
 }

@@ -2,7 +2,11 @@
 
 namespace Tests\Unit\CreateUser;
 
+use App\Services\CreateUserService;
 use PHPUnit\Framework\TestCase;
+use App\Http\Clients\DBClient;
+use Mockery;
+use Exception;
 
 class CreateUserServiceTest extends TestCase
 {
@@ -88,4 +92,3 @@ class CreateUserServiceTest extends TestCase
         parent::tearDown();
     }
 }
-

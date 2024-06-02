@@ -107,6 +107,26 @@ class CreateUserControllerTest extends TestCase
         ]), $result->getContent());
     }
 
+    /**
+     * @test
+     */
+    public function createUserWithMissingParameters()
+    {
+        $request = CreateUserRequest::create('/analytics/users', 'POST');
+
+        $createUserServiceMock = Mockery::mock(CreateUserService::class);
+        $createUserController = new CreateUserController($createUserServiceMock);
+
+        $result = $createUserController->__invoke($request);
+
+        $this->assertInstanceOf(JsonResponse::class, $result);
+        $this->assertEquals(400, $result->getStatusCode());
+        $this->assertJsonStringEqualsJsonString(json_encode([
+            'error' => 'Bad Request',
+            'message' => 'Parámetros inválidos'
+        ]), $result->getContent());
+    }
+
     protected function tearDown(): void
     {
         Mockery::close();
