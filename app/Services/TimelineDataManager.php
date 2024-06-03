@@ -54,7 +54,7 @@ class TimelineDataManager
 
         foreach ($streamers as $streamer) {
             $response = $this->apiClient->makeCurlCall(
-                "https://api.twitch.tv/helix/streams?user_id={$streamer->streamerId}&first=5",
+                "https://api.twitch.tv/helix/videos?user_id={$streamer->streamerId}&sort=time&first=5",
                 $token
             );
 
@@ -65,9 +65,8 @@ class TimelineDataManager
                         'streamerId' => $stream['user_id'],
                         'userName' => $stream['user_name'],
                         'title' => $stream['title'],
-                        'gameName' => $stream['game_name'],
-                        'viewerCount' => $stream['viewer_count'],
-                        'startedAt' => $stream['started_at'],
+                        'viewerCount' => $stream['view_count'],
+                        'startedAt' => $stream['created_at'],
                     ];
                 }
             } else {

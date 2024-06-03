@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\Http\Controllers\GetTimelineController;
 use App\Http\Requests\GetTimelineRequest;
 use App\Services\GetTimelineService;
-use App\Serializers\TimelineDataSerializer;
 use Illuminate\Http\JsonResponse;
 use Mockery;
 use Symfony\Component\HttpFoundation\Response;
@@ -42,8 +41,7 @@ class GetTimelineControllerTest extends TestCase
             ->once()
             ->with('user123')
             ->andReturn($timelineData);
-        $timelineSerializerMock = Mockery::mock(TimelineDataSerializer::class);
-        $controller = new GetTimelineController($timelineServiceMock, $timelineSerializerMock);
+        $controller = new GetTimelineController($timelineServiceMock);
         $request = new GetTimelineRequest(['userId' => 'user123']);
 
         $response = $controller->__invoke($request);
@@ -64,8 +62,7 @@ class GetTimelineControllerTest extends TestCase
             ->once()
             ->with('user123')
             ->andThrow(new \Exception("El usuario especificado user123 no sigue a ningún streamer", Response::HTTP_INTERNAL_SERVER_ERROR));
-        $timelineSerializerMock = Mockery::mock(TimelineDataSerializer::class);
-        $controller = new GetTimelineController($timelineServiceMock, $timelineSerializerMock);
+        $controller = new GetTimelineController($timelineServiceMock);
         $request = new GetTimelineRequest(['userId' => 'user123']);
 
         $response = $controller->__invoke($request);
@@ -87,8 +84,7 @@ class GetTimelineControllerTest extends TestCase
             ->once()
             ->with('user123')
             ->andThrow(new \Exception("Error inesperado", Response::HTTP_INTERNAL_SERVER_ERROR));
-        $timelineSerializerMock = Mockery::mock(TimelineDataSerializer::class);
-        $controller = new GetTimelineController($timelineServiceMock, $timelineSerializerMock);
+        $controller = new GetTimelineController($timelineServiceMock);
         $request = new GetTimelineRequest(['userId' => 'user123']);
 
         $response = $controller->__invoke($request);

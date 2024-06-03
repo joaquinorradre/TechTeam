@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\GetTimelineRequest;
-use App\Serializers\TimelineDataSerializer;
 use App\Services\GetTimelineService;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -11,11 +10,9 @@ use Illuminate\Http\JsonResponse;
 class GetTimelineController
 {
     private GetTimelineService $getTimelineService;
-    private TimelineDataSerializer $TimelineSerializer;
-    public function __construct(GetTimelineService $getTimelineService, TimelineDataSerializer $TimelineSerializer)
+    public function __construct(GetTimelineService $getTimelineService)
     {
         $this->getTimelineService = $getTimelineService;
-        $this->TimelineSerializer = $TimelineSerializer;
     }
 
     /**
