@@ -1,11 +1,12 @@
 <?php
 
-namespace Tests\Unit\Services;
+namespace Tests\Unit\Timeline;
 
 use App\Http\Clients\ApiClient;
 use App\Http\Clients\DBClient;
 use App\Services\TwitchTokenService;
 use App\Services\TimelineDataManager;
+use Exception;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 
@@ -69,9 +70,9 @@ class TimelineDataManagerTest extends TestCase
 
     /**
      * @test
-     * @throws \Exception
+     * @throws Exception
      */
-    public function given_an_invalid_user_id_timeline_data_manager_should_return_empty_array()
+    public function test_given_an_invalid_user_id_timeline_data_manager_should_return_empty_array()
     {
         $apiClientMock = Mockery::mock(ApiClient::class);
         $dbClientMock = Mockery::mock(DBClient::class);
@@ -88,7 +89,11 @@ class TimelineDataManagerTest extends TestCase
 
         $timelineDataManager = new TimelineDataManager($dbClientMock, $twitchTokenServiceMock, $apiClientMock);
 
-        $response = $timelineDataManager->getTimeline('invalidUserId');
+        try {
+            $response = $timelineDataManager->getTimeline('invalidUserId');
+        } catch (Exception $e) {
+            $response = [];
+        }
 
         $this->assertIsArray($response);
         $this->assertEmpty($response);

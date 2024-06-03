@@ -150,7 +150,7 @@ class DBClient
                 ->delete();
 
             if ($deletedRows === 0) {
-                throw new Exception('El usuario ' . $userId . ' o el streamer ' . $streamerId . ' especificado no existe en la API', Response::HTTP_NOT_FOUND);
+                throw new Exception('El usuario ' . $userId . ' o el streamer ' . $streamerId . ' especificado no existe en la BBDD', Response::HTTP_NOT_FOUND);
             }
 
             return $deletedRows;
