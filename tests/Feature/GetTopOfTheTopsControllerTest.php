@@ -12,22 +12,35 @@ use App\Services\TwitchTokenService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Mockery;
-use Tests\TestCase;
+use PHPUnit\Framework\TestCase;
 
 class GetTopOfTheTopsControllerTest extends TestCase
 {
+    protected $apiClientMock;
+    protected $dbClientMock;
+    protected $twitchTokenServiceMock;
+    protected $topsOfTheTopsDataManagerMock;
+    protected $getTopOfTheTopsServiceMock;
+    protected $topsOfTheTopsDataSerializerMock;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->apiClientMock = Mockery::mock(ApiClient::class);
+        $this->dbClientMock = Mockery::mock(DBClient::class);
+        $this->twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
+        $this->topsOfTheTopsDataManagerMock = Mockery::mock(TopsOfTheTopsDataManager::class);
+        $this->getTopOfTheTopsServiceMock = Mockery::mock(GetTopOfTheTopsService::class);
+    }
+
     /**
      * @test
      */
     public function getTopOfTheTops()
     {
         $request = Request::create('/analytics/tops', 'GET', ['since' => 600]);
-        $apiClientMock = Mockery::mock(ApiClient::class);
-        $dbClientMock = Mockery::mock(DBClient::class);
-        $twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
-        $topsOfTheTopsDataManagerMock = Mockery::mock(TopsOfTheTopsDataManager::class);
-        $getTopOfTheTopsServiceMock = Mockery::mock(GetTopOfTheTopsService::class);
-        $topsOfTheTopsDataSerializerMock = Mockery::mock(TopsOfTheTopsDataSerializer::class);
+
         $gamesData = [
             'data' => [
                 ['id' => '123', 'name' => 'Game 1'],
@@ -35,10 +48,12 @@ class GetTopOfTheTopsControllerTest extends TestCase
                 ['id' => '789', 'name' => 'Game 3'],
             ]
         ];
-        $apiClientMock
+
+        $this->apiClientMock
             ->shouldReceive('makeCurlCall')
             ->andReturn(['response' => json_encode($gamesData), 'status' => 200]);
-        $dbClientMock
+
+        $this->dbClientMock
             ->shouldReceive('fetchGames')
             ->andReturn(collect([]))
             ->shouldReceive('insertGame')
@@ -46,10 +61,12 @@ class GetTopOfTheTopsControllerTest extends TestCase
             ->andReturnNull()
             ->shouldReceive('getGameData')
             ->andReturn($gamesData['data']);
-        $twitchTokenServiceMock
+
+        $this->twitchTokenServiceMock
             ->shouldReceive('getToken')
             ->andReturn('token');
-        $topsOfTheTopsDataManagerMock
+
+        $this->topsOfTheTopsDataManagerMock
             ->shouldReceive('updateGamesData')
             ->andReturn($gamesData['data'])
             ->shouldReceive('updateExistingGamesData')
@@ -57,17 +74,20 @@ class GetTopOfTheTopsControllerTest extends TestCase
             ->andReturn($gamesData['data'])
             ->shouldReceive('fetchGames')
             ->andReturn(collect($gamesData['data']));
-        $getTopOfTheTopsServiceMock
+
+        $this->getTopOfTheTopsServiceMock
             ->shouldReceive('execute')
             ->with(600)
             ->andReturn($gamesData['data']);
-        $topsOfTheTopsDataSerializerMock
+
+        $this->topsOfTheTopsDataSerializerMock
             ->shouldReceive('serialize')
             ->with($gamesData['data'])
             ->andReturn($gamesData['data']);
+
         $controller = new GetTopOfTheTopsController(
-            $getTopOfTheTopsServiceMock,
-            $topsOfTheTopsDataSerializerMock
+            $this->getTopOfTheTopsServiceMock,
+            $this->topsOfTheTopsDataSerializerMock
         );
 
         $response = $controller($request);
@@ -78,5 +98,11 @@ class GetTopOfTheTopsControllerTest extends TestCase
             json_encode($gamesData['data'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE),
             $response->getContent()
         );
+    }
+
+    protected function tearDown(): void
+    {
+        Mockery::close();
+        parent::tearDown();
     }
 }

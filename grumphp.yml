@@ -23,6 +23,7 @@ grumphp:
               - 'rama_raul'
               - 'endpoint5'
               - 'endpoint1'
+              - 'testMiguel'
 
         phpcs:
             standard: [PSR12]

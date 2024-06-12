@@ -55,7 +55,7 @@ class DBClient
         } catch (Exception $exception) {
             if ($exception->getCode() === Response::HTTP_CONFLICT || $exception->getCode() === Response::HTTP_NOT_FOUND) {
                 throw $exception;
-            } else {
+            }else{
                 throw new Exception('Error del servidor al seguir al streamer', Response::HTTP_INTERNAL_SERVER_ERROR);
             }
         }
@@ -86,15 +86,10 @@ class DBClient
             throw new Exception('El usuario especificado ' . $userId . ' no existe', Response::HTTP_NOT_FOUND);
         }
     }
-        
+
     public function fetchGames()
     {
         return DB::table('Game')->get();
-    }
-
-    public function fetchGameIds()
-    {
-        return DB::table('Game')->pluck('game_id')->toArray();
     }
 
     public function fetchGameById($gameId)
@@ -220,8 +215,9 @@ class DBClient
 
     public function userExistsInDatabase(string $username): bool
     {
-        return DB::table('User')->where('username', $username)->exists();
+        $query = DB::table('User')->where('name', $username)->exists();
+        return $query;
     }
 
-}
 
+}

@@ -15,31 +15,47 @@ use Symfony\Component\HttpFoundation\Response;
 
 class PostStreamerControllerTest extends TestCase
 {
+    protected $apiClientMock;
+    protected $dbClientMock;
+    protected $streamerExistManagerMock;
+    protected $postStreamerService;
+    protected $controller;
+    protected $request;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->apiClientMock = Mockery::mock(ApiClient::class);
+        $this->dbClientMock = Mockery::mock(DBClient::class);
+        $this->streamerExistManagerMock = Mockery::mock(StreamerExistManager::class);
+
+        $this->postStreamerService = new PostStreamerService($this->streamerExistManagerMock, $this->dbClientMock);
+        $this->controller = new PostStreamerController($this->postStreamerService);
+        $this->request = new Request(['userId' => 'user123', 'streamerId' => 'streamer123']);
+    }
+
     /**
      * @test
      */
     public function postStreamer()
     {
-        $apiClientMock = Mockery::mock(ApiClient::class);
-        $apiClientMock
+        $this->apiClientMock
             ->shouldReceive('makeCurlCall')
             ->andReturn(['response' => json_encode(['data' => [['id' => '123']]]), 'status' => 200]);
-        $dbClientMock = Mockery::mock(DBClient::class);
-        $dbClientMock
+
+        $this->dbClientMock
             ->shouldReceive('addStreamerToDatabase')
             ->once()
             ->with('user123', 'streamer123');
-        $streamerExistManagerMock = Mockery::mock(StreamerExistManager::class);
-        $streamerExistManagerMock
+
+        $this->streamerExistManagerMock
             ->shouldReceive('getStreamer')
             ->once()
             ->with('streamer123')
-            ->andReturn(true); // Simulate streamer exists
-        $postStreamerService = new PostStreamerService($streamerExistManagerMock, $dbClientMock);
-        $controller = new PostStreamerController($postStreamerService);
-        $request = new Request(['userId' => 'user123', 'streamerId' => 'streamer123']);
+            ->andReturn(true);
 
-        $response = $controller->__invoke($request);
+        $response = $this->controller->__invoke($this->request);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertSame(200, $response->status());
@@ -51,23 +67,17 @@ class PostStreamerControllerTest extends TestCase
      */
     public function postStreamerServerError()
     {
-        $apiClientMock = Mockery::mock(ApiClient::class);
-        // Simulate API client returns HTTP_INTERNAL_SERVER_ERROR
-        $apiClientMock
+        $this->apiClientMock
             ->shouldReceive('makeCurlCall')
             ->andReturn(['response' => 'Internal server error', 'status' => Response::HTTP_INTERNAL_SERVER_ERROR]);
-        $dbClientMock = Mockery::mock(DBClient::class);
-        $streamerExistManagerMock = Mockery::mock(StreamerExistManager::class);
-        $streamerExistManagerMock
+
+        $this->streamerExistManagerMock
             ->shouldReceive('getStreamer')
             ->once()
             ->with('streamer123')
             ->andThrow(new \Exception('Internal server error', Response::HTTP_INTERNAL_SERVER_ERROR));
-        $postStreamerService = new PostStreamerService($streamerExistManagerMock, $dbClientMock);
-        $controller = new PostStreamerController($postStreamerService);
-        $request = new Request(['userId' => 'user123', 'streamerId' => 'streamer123']);
 
-        $response = $controller->__invoke($request);
+        $response = $this->controller->__invoke($this->request);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertSame(Response::HTTP_INTERNAL_SERVER_ERROR, $response->status());
@@ -79,26 +89,26 @@ class PostStreamerControllerTest extends TestCase
      */
     public function postStreamerNotFound()
     {
-        $apiClientMock = Mockery::mock(ApiClient::class);
-        // Simulate API client returns HTTP_NOT_FOUND
-        $apiClientMock
+        $this->apiClientMock
             ->shouldReceive('makeCurlCall')
             ->andReturn(['response' => 'Streamer not found', 'status' => Response::HTTP_NOT_FOUND]);
-        $dbClientMock = Mockery::mock(DBClient::class);
-        $streamerExistManagerMock = Mockery::mock(StreamerExistManager::class);
-        $streamerExistManagerMock
+
+        $this->streamerExistManagerMock
             ->shouldReceive('getStreamer')
             ->once()
             ->with('streamer123')
             ->andThrow(new \Exception('Streamer not found', Response::HTTP_NOT_FOUND));
-        $postStreamerService = new PostStreamerService($streamerExistManagerMock, $dbClientMock);
-        $controller = new PostStreamerController($postStreamerService);
-        $request = new Request(['userId' => 'user123', 'streamerId' => 'streamer123']);
 
-        $response = $controller->__invoke($request);
+        $response = $this->controller->__invoke($this->request);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertSame(Response::HTTP_NOT_FOUND, $response->status());
         $this->assertSame('Streamer not found', $response->getData()->message);
+    }
+
+    protected function tearDown(): void
+    {
+        Mockery::close();
+        parent::tearDown();
     }
 }

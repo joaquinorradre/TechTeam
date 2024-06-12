@@ -12,21 +12,30 @@ use Symfony\Component\HttpFoundation\Response;
 
 class DeleteStreamerControllerTest extends TestCase
 {
+    protected $dbClientMock;
+    protected $controller;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->dbClientMock = Mockery::mock(DBClient::class);
+        $this->controller = new DeleteStreamerController($this->dbClientMock);
+    }
+
     /**
      * @test
      */
     public function unfollowStreamer()
     {
-        $dbClientMock = Mockery::mock(DBClient::class);
-        $dbClientMock
+        $this->dbClientMock
             ->shouldReceive('deleteStreamerFromDatabase')
             ->once()
             ->with('user123', 'streamer123')
             ->andReturn(1);
-        $controller = new DeleteStreamerController($dbClientMock);
         $request = new Request(['userId' => 'user123', 'streamerId' => 'streamer123']);
 
-        $response = $controller->__invoke($request);
+        $response = $this->controller->__invoke($request);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertSame(200, $response->status());
@@ -38,16 +47,14 @@ class DeleteStreamerControllerTest extends TestCase
      */
     public function unfollowStreamerServerError()
     {
-        $dbClientMock = Mockery::mock(DBClient::class);
-        $dbClientMock
+        $this->dbClientMock
             ->shouldReceive('deleteStreamerFromDatabase')
             ->once()
             ->with('user123', 'streamer123')
             ->andThrow(new \Exception('Error del servidor al dejar de seguir al streamer', Response::HTTP_INTERNAL_SERVER_ERROR));
-        $controller = new DeleteStreamerController($dbClientMock);
         $request = new Request(['userId' => 'user123', 'streamerId' => 'streamer123']);
 
-        $response = $controller->__invoke($request);
+        $response = $this->controller->__invoke($request);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertSame(Response::HTTP_INTERNAL_SERVER_ERROR, $response->status());
@@ -59,19 +66,23 @@ class DeleteStreamerControllerTest extends TestCase
      */
     public function unfollowStreamerNotFound()
     {
-        $dbClientMock = Mockery::mock(DBClient::class);
-        $dbClientMock
+        $this->dbClientMock
             ->shouldReceive('deleteStreamerFromDatabase')
             ->once()
             ->with('user123', 'streamer123')
             ->andThrow(new \Exception('El usuario user123 o el streamer streamer123 especificado no existe en la API', Response::HTTP_NOT_FOUND));
-        $controller = new DeleteStreamerController($dbClientMock);
         $request = new Request(['userId' => 'user123', 'streamerId' => 'streamer123']);
 
-        $response = $controller->__invoke($request);
+        $response = $this->controller->__invoke($request);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertSame(Response::HTTP_NOT_FOUND, $response->status());
         $this->assertSame('El usuario user123 o el streamer streamer123 especificado no existe en la API', $response->getData()->message);
+    }
+
+    protected function tearDown(): void
+    {
+        Mockery::close();
+        parent::tearDown();
     }
 }

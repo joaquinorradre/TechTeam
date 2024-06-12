@@ -12,6 +12,19 @@ use Tests\TestCase;
 
 class GetTimelineControllerTest extends TestCase
 {
+    protected $timelineServiceMock;
+    protected $controller;
+    protected $request;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->timelineServiceMock = Mockery::mock(GetTimelineService::class);
+        $this->controller = new GetTimelineController($this->timelineServiceMock);
+        $this->request = new GetTimelineRequest(['userId' => 'user123']);
+    }
+
     /**
      * @test
      */
@@ -35,16 +48,13 @@ class GetTimelineControllerTest extends TestCase
                 'startedAt' => '2023-06-01T13:00:00Z'
             ]
         ];
-        $timelineServiceMock = Mockery::mock(GetTimelineService::class);
-        $timelineServiceMock
+        $this->timelineServiceMock
             ->shouldReceive('execute')
             ->once()
             ->with('user123')
             ->andReturn($timelineData);
-        $controller = new GetTimelineController($timelineServiceMock);
-        $request = new GetTimelineRequest(['userId' => 'user123']);
 
-        $response = $controller->__invoke($request);
+        $response = $this->controller->__invoke($this->request);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertSame(Response::HTTP_OK, $response->status());
@@ -56,16 +66,13 @@ class GetTimelineControllerTest extends TestCase
      */
     public function getTimelineNotFound()
     {
-        $timelineServiceMock = Mockery::mock(GetTimelineService::class);
-        $timelineServiceMock
+        $this->timelineServiceMock
             ->shouldReceive('execute')
             ->once()
             ->with('user123')
             ->andThrow(new \Exception("El usuario especificado user123 no sigue a ningún streamer", Response::HTTP_INTERNAL_SERVER_ERROR));
-        $controller = new GetTimelineController($timelineServiceMock);
-        $request = new GetTimelineRequest(['userId' => 'user123']);
 
-        $response = $controller->__invoke($request);
+        $response = $this->controller->__invoke($this->request);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertSame(Response::HTTP_INTERNAL_SERVER_ERROR, $response->status());
@@ -78,16 +85,13 @@ class GetTimelineControllerTest extends TestCase
      */
     public function getTimelineError()
     {
-        $timelineServiceMock = Mockery::mock(GetTimelineService::class);
-        $timelineServiceMock
+        $this->timelineServiceMock
             ->shouldReceive('execute')
             ->once()
             ->with('user123')
             ->andThrow(new \Exception("Error inesperado", Response::HTTP_INTERNAL_SERVER_ERROR));
-        $controller = new GetTimelineController($timelineServiceMock);
-        $request = new GetTimelineRequest(['userId' => 'user123']);
 
-        $response = $controller->__invoke($request);
+        $response = $this->controller->__invoke($this->request);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertSame(Response::HTTP_INTERNAL_SERVER_ERROR, $response->status());

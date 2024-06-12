@@ -11,6 +11,17 @@ use Tests\TestCase;
 
 class CreateUserControllerTest extends TestCase
 {
+    protected $createUserServiceMock;
+    protected $createUserController;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->createUserServiceMock = Mockery::mock(CreateUserService::class);
+        $this->createUserController = new CreateUserController($this->createUserServiceMock);
+    }
+
     /**
      * @test
      */
@@ -20,20 +31,15 @@ class CreateUserControllerTest extends TestCase
             'username' => 'nuevo_usuario',
             'password' => 'nueva_contraseña'
         ];
-
         $request = CreateUserRequest::create('/analytics/users', 'POST', $data);
-
-        $createUserServiceMock = Mockery::mock(CreateUserService::class);
-
-        $createUserServiceMock
+        $this->createUserServiceMock
             ->shouldReceive('createUser')
             ->once()
             ->with('nuevo_usuario', 'nueva_contraseña')
             ->andReturn(true);
 
-        $createUserController = new CreateUserController($createUserServiceMock);
 
-        $result = $createUserController->__invoke($request);
+        $result = $this->createUserController->__invoke($request);
 
         $this->assertInstanceOf(JsonResponse::class, $result);
         $this->assertEquals(201, $result->getStatusCode());
@@ -52,20 +58,14 @@ class CreateUserControllerTest extends TestCase
             'username' => 'nuevo_usuario',
             'password' => 'nueva_contraseña'
         ];
-
         $request = CreateUserRequest::create('/analytics/users', 'POST', $data);
-
-        $createUserServiceMock = Mockery::mock(CreateUserService::class);
-
-        $createUserServiceMock
+        $this->createUserServiceMock
             ->shouldReceive('createUser')
             ->once()
             ->with('nuevo_usuario', 'nueva_contraseña')
             ->andThrow(new \Exception('El nombre de usuario ya existe', 409));
 
-        $createUserController = new CreateUserController($createUserServiceMock);
-
-        $result = $createUserController->__invoke($request);
+        $result = $this->createUserController->__invoke($request);
 
         $this->assertInstanceOf(JsonResponse::class, $result);
         $this->assertEquals(409, $result->getStatusCode());
@@ -84,20 +84,14 @@ class CreateUserControllerTest extends TestCase
             'username' => 'nuevo_usuario',
             'password' => 'nueva_contraseña'
         ];
-
         $request = CreateUserRequest::create('/analytics/users', 'POST', $data);
-
-        $createUserServiceMock = Mockery::mock(CreateUserService::class);
-
-        $createUserServiceMock
+        $this->createUserServiceMock
             ->shouldReceive('createUser')
             ->once()
             ->with('nuevo_usuario', 'nueva_contraseña')
             ->andThrow(new \Exception('Error del servidor al crear el usuario', 500));
 
-        $createUserController = new CreateUserController($createUserServiceMock);
-
-        $result = $createUserController->__invoke($request);
+        $result = $this->createUserController->__invoke($request);
 
         $this->assertInstanceOf(JsonResponse::class, $result);
         $this->assertEquals(500, $result->getStatusCode());
@@ -113,11 +107,7 @@ class CreateUserControllerTest extends TestCase
     public function createUserWithMissingParameters()
     {
         $request = CreateUserRequest::create('/analytics/users', 'POST');
-
-        $createUserServiceMock = Mockery::mock(CreateUserService::class);
-        $createUserController = new CreateUserController($createUserServiceMock);
-
-        $result = $createUserController->__invoke($request);
+        $result = $this->createUserController->__invoke($request);
 
         $this->assertInstanceOf(JsonResponse::class, $result);
         $this->assertEquals(400, $result->getStatusCode());

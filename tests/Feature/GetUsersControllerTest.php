@@ -15,38 +15,59 @@ use PHPUnit\Framework\TestCase;
 
 class GetUsersControllerTest extends TestCase
 {
+    protected $apiClientMock;
+    protected $dbClientMock;
+    protected $twitchTokenServiceMock;
+    protected $userDataSerializerMock;
+
+    private $userDataManager;
+    private $getUsersService;
+    private $getUsersController;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->apiClientMock = Mockery::mock(ApiClient::class);
+        $this->dbClientMock = Mockery::mock(DbClient::class);
+        $this->twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
+        $this->userDataSerializerMock = Mockery::mock(UserDataSerializer::class);
+
+        $this->userDataManager = new UserDataManager($this->apiClientMock,$this->dbClientMock,$this->twitchTokenServiceMock);
+        $this->getUsersService = new GetUsersService($this->userDataManager);
+        $this->getUsersController = new GetUsersController($this->getUsersService,$this->userDataSerializerMock);
+    }
     /**
      * @test
      */
     public function getUsers()
     {
         $request = GetUsersRequest::create('/analytics/users', 'GET', ['id' => 'valor']);
-        $apiClientMock = Mockery::mock(ApiClient::class);
-        $twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
-        $dbClientMock = Mockery::mock(DbClient::class);
-        $userDataSerializerMock = Mockery::mock(UserDataSerializer::class);
-        $twitchTokenServiceMock
+        $this->twitchTokenServiceMock
             ->shouldReceive('getToken')
             ->once()
             ->andReturn('token');
-        $dbClientMock
+        $this->dbClientMock
             ->shouldReceive('getTokenFromDatabase')
             ->once()
             ->andReturn('token');
-        $apiClientMock
+        $this->apiClientMock
             ->shouldReceive('makeCurlCall')
             ->andReturn(['response' => json_encode(['data' => [['id' => 'id', 'login' => 'login']]]), 'status' => 200]);
-        $userDataSerializerMock
+        $this->userDataSerializerMock
             ->shouldReceive('serialize')
             ->once()
             ->with([['id' => 'id', 'login' => 'login']])
             ->andReturn([['id' => 'id', 'login' => 'login',]]);
-        $userDataManager = new UserDataManager($apiClientMock,$dbClientMock,$twitchTokenServiceMock);
-        $getUsersService = new GetUsersService($userDataManager);
-        $getUsersController = new GetUsersController($getUsersService,$userDataSerializerMock);
 
-        $result = $getUsersController->__invoke($request);
+        $result = $this->getUsersController->__invoke($request);
 
         $this->assertNotEmpty($result);
+    }
+
+    protected function tearDown(): void
+    {
+        Mockery::close();
+        parent::tearDown();
     }
 }
