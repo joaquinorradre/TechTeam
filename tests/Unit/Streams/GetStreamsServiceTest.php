@@ -9,20 +9,29 @@ use PHPUnit\Framework\TestCase;
 
 class GetStreamsServiceTest extends TestCase
 {
+    private $streamsDataManagerMock;
+    private $getStreamsService;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->streamsDataManagerMock = Mockery::mock(StreamsDataManager::class);
+        $this->getStreamsService = new GetStreamsService($this->streamsDataManagerMock);
+    }
+
     /**
      * @test
      * @throws \Exception
      */
     public function given_valid_response_from_twitch_should_execute_method()
     {
-        $streamsDataManagerMock = Mockery::mock(StreamsDataManager::class);
-        $getStreamsService = new GetStreamsService($streamsDataManagerMock);
-        $streamsDataManagerMock
+        $this->streamsDataManagerMock
             ->shouldReceive('getStreams')
             ->once()
             ->andReturn(json_encode(['data' => [['title' => 'Stream 1', 'user_name' => 'User 1']]]));
 
-        $result = $getStreamsService->execute();
+        $result = $this->getStreamsService->execute();
 
         $this->assertIsArray($result);
         $this->assertEquals(1, count($result));
@@ -36,16 +45,20 @@ class GetStreamsServiceTest extends TestCase
      */
     public function given_null_response_from_twitch_should_execute_method()
     {
-        $streamsDataManagerMock = Mockery::mock(StreamsDataManager::class);
-        $getStreamsService = new GetStreamsService($streamsDataManagerMock);
-        $streamsDataManagerMock
+        $this->streamsDataManagerMock
             ->shouldReceive('getStreams')
             ->once()
             ->andReturn('');
 
-        $result = $getStreamsService->execute();
+        $result = $this->getStreamsService->execute();
 
         $this->assertIsArray($result);
         $this->assertEquals(0, count($result));
+    }
+
+    protected function tearDown(): void
+    {
+        Mockery::close();
+        parent::tearDown();
     }
 }

@@ -19,12 +19,6 @@ class GetTopOfTheTopsServiceTest extends TestCase
         $this->service = new GetTopOfTheTopsService($this->topsOfTheTopsDataManager);
     }
 
-    protected function tearDown(): void
-    {
-        Mockery::close();
-        parent::tearDown();
-    }
-
     /**
      * @test
      * @throws Exception
@@ -128,4 +122,10 @@ class GetTopOfTheTopsServiceTest extends TestCase
 
         $this->service->execute($since);
     }
+    protected function tearDown(): void
+    {
+        Mockery::close();
+        parent::tearDown();
+    }
+
 }

@@ -11,20 +11,24 @@ use PHPUnit\Framework\TestCase;
 
 class TopsOfTheTopsDataManagerTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->dbClientMock = Mockery::mock(DBClient::class);
+        $this->apiClientMock = Mockery::mock(ApiClient::class);
+        $this->twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
+    }
 
     /**
      * @test
      */
     public function fetch_games_returns_collection()
     {
-        $dbClientMock = Mockery::mock(DBClient::class);
-        $apiClientMock = Mockery::mock(ApiClient::class);
-        $twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
-        $dbClientMock
+        $this->dbClientMock
             ->shouldReceive('fetchGames')
             ->once()
             ->andReturn(collect(['game1', 'game2', 'game3']));
-        $dataManager = new TopsOfTheTopsDataManager($dbClientMock, $apiClientMock, $twitchTokenServiceMock);
+        $dataManager = new TopsOfTheTopsDataManager($this->dbClientMock, $this->apiClientMock, $this->twitchTokenServiceMock);
 
         $result = $dataManager->fetchGames();
 
@@ -37,32 +41,29 @@ class TopsOfTheTopsDataManagerTest extends TestCase
      */
     public function update_games_data_updates_and_returns_game_data()
     {
-        $dbClientMock = Mockery::mock(DBClient::class);
-        $apiClientMock = Mockery::mock(ApiClient::class);
-        $twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
-        $twitchTokenServiceMock
+        $this->twitchTokenServiceMock
             ->shouldReceive('getToken')
             ->once()
             ->andReturn('token');
-        $apiClientMock
+        $this->apiClientMock
             ->shouldReceive('makeCurlCall')
             ->with('https://api.twitch.tv/helix/games/top?first=3', 'token')
             ->once()
             ->andReturn(['response' => json_encode(['data' => [['id' => '123', 'name' => 'Game 1']]]), 'status' => 200]);
-        $dbClientMock
+        $this->dbClientMock
             ->shouldReceive('getGameData')
             ->andReturn(collect(['gameData']));
-        $dataManagerMock = Mockery::mock(TopsOfTheTopsDataManager::class, [$dbClientMock, $apiClientMock, $twitchTokenServiceMock])
+        $this->dataManagerMock = Mockery::mock(TopsOfTheTopsDataManager::class, [$this->dbClientMock, $this->apiClientMock, $this->twitchTokenServiceMock])
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
-        $dataManagerMock
+        $this->dataManagerMock
             ->shouldReceive('insertGames')
             ->once();
-        $dataManagerMock
+        $this->dataManagerMock
             ->shouldReceive('fetchAndInsertVideos')
             ->once();
 
-        $result = $dataManagerMock->updateGamesData();
+        $result = $this->dataManagerMock->updateGamesData();
 
         $this->assertNotEmpty($result);
         $this->assertEquals(collect(['gameData']), $result);
@@ -118,6 +119,12 @@ class TopsOfTheTopsDataManagerTest extends TestCase
 
         $this->assertNotEmpty($result);
         $this->assertEquals(collect(['gameData']), $result);
+    }
+
+    protected function tearDown(): void
+    {
+        Mockery::close();
+        parent::tearDown();
     }
 
 }

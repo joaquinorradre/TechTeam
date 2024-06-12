@@ -12,9 +12,18 @@ use PHPUnit\Framework\TestCase;
 
 class TimelineDataManagerTest extends TestCase
 {
-    public function tearDown(): void
+    protected $apiClientMock;
+    protected $dbClientMock;
+    protected $twitchTokenServiceMock;
+    protected $timelineDataManager;
+
+    protected function setUp(): void
     {
-        Mockery::close();
+        parent::setUp();
+        $this->apiClientMock = Mockery::mock(ApiClient::class);
+        $this->dbClientMock = Mockery::mock(DBClient::class);
+        $this->twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
+        $this->timelineDataManager = new TimelineDataManager($this->dbClientMock, $this->twitchTokenServiceMock, $this->apiClientMock);
     }
 
     /**
@@ -23,17 +32,14 @@ class TimelineDataManagerTest extends TestCase
      */
     public function given_a_valid_user_id_timeline_data_manager_should_return_timeline_data()
     {
-        $apiClientMock = Mockery::mock(ApiClient::class);
-        $dbClientMock = Mockery::mock(DBClient::class);
-        $twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
-        $twitchTokenServiceMock
+        $this->twitchTokenServiceMock
             ->shouldReceive('getToken')
             ->andReturn('access_token');
-        $dbClientMock
+        $this->dbClientMock
             ->shouldReceive('getFollowedStreamers')
             ->with('validUserId')
             ->andReturn([(object) ['streamerId' => '12345']]);
-        $apiClientMock
+        $this->apiClientMock
             ->shouldReceive('makeCurlCall')
             ->once()
             ->with('https://api.twitch.tv/helix/videos?user_id=12345&sort=time&first=5', 'access_token')
@@ -49,9 +55,8 @@ class TimelineDataManagerTest extends TestCase
                 ]]),
                 'status' => 200
             ]);
-        $timelineDataManager = new TimelineDataManager($dbClientMock, $twitchTokenServiceMock, $apiClientMock);
 
-        $response = $timelineDataManager->getTimeline('validUserId');
+        $response = $this->timelineDataManager->getTimeline('validUserId');
 
         $this->assertIsArray($response, 'Response should be an array');
         $this->assertCount(1, $response, 'Response should contain exactly one element');
@@ -68,25 +73,16 @@ class TimelineDataManagerTest extends TestCase
      */
     public function test_given_an_invalid_user_id_timeline_data_manager_should_return_empty_array()
     {
-        $apiClientMock = Mockery::mock(ApiClient::class);
-        $dbClientMock = Mockery::mock(DBClient::class);
-        $twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
-
-        $twitchTokenServiceMock
+        $this->twitchTokenServiceMock
             ->shouldReceive('getToken')
             ->andReturn('access_token');
-
-        $dbClientMock
+        $this->dbClientMock
             ->shouldReceive('getFollowedStreamers')
             ->with('invalidUserId')
             ->andReturn([]);
-        $timelineDataManager = new TimelineDataManager($dbClientMock, $twitchTokenServiceMock, $apiClientMock);
+        $this->expectException(Exception::class);
 
-        try {
-            $response = $timelineDataManager->getTimeline('invalidUserId');
-        } catch (Exception $e) {
-            $response = [];
-        }
+        $response = $this->timelineDataManager->getTimeline('invalidUserId');
 
         $this->assertIsArray($response);
         $this->assertEmpty($response);
@@ -97,18 +93,13 @@ class TimelineDataManagerTest extends TestCase
      */
     public function given_a_token_service_failure_timeline_data_manager_should_throw_exception()
     {
-        $apiClientMock = Mockery::mock(ApiClient::class);
-        $dbClientMock = Mockery::mock(DBClient::class);
-        $twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
-        $twitchTokenServiceMock
+        $this->twitchTokenServiceMock
             ->shouldReceive('getToken')
             ->andThrow(new \Exception('Failed to get token'));
-        $timelineDataManager = new TimelineDataManager($dbClientMock, $twitchTokenServiceMock, $apiClientMock);
-
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Error al obtener el timeline: Failed to get token');
 
-        $timelineDataManager->getTimeline('validUserId');
+        $this->timelineDataManager->getTimeline('validUserId');
     }
 
     /**
@@ -116,17 +107,14 @@ class TimelineDataManagerTest extends TestCase
      */
     public function given_a_curl_call_failure_timeline_data_manager_should_throw_exception()
     {
-        $apiClientMock = Mockery::mock(ApiClient::class);
-        $dbClientMock = Mockery::mock(DBClient::class);
-        $twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
-        $twitchTokenServiceMock
+        $this->twitchTokenServiceMock
             ->shouldReceive('getToken')
             ->andReturn('access_token');
-        $dbClientMock
+        $this->dbClientMock
             ->shouldReceive('getFollowedStreamers')
             ->with('validUserId')
             ->andReturn([(object) ['streamerId' => '12345']]);
-        $apiClientMock
+        $this->apiClientMock
             ->shouldReceive('makeCurlCall')
             ->once()
             ->with('https://api.twitch.tv/helix/videos?user_id=12345&sort=time&first=5', 'access_token')
@@ -134,11 +122,9 @@ class TimelineDataManagerTest extends TestCase
                 'response' => null,
                 'status' => 500
             ]);
-        $timelineDataManager = new TimelineDataManager($dbClientMock, $twitchTokenServiceMock, $apiClientMock);
-
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Error al obtener el timeline: Error al obtener los videos del streamer');
 
-        $timelineDataManager->getTimeline('validUserId');
+        $this->timelineDataManager->getTimeline('validUserId');
     }
 }

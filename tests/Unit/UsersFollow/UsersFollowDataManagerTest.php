@@ -6,29 +6,39 @@ use App\Http\Clients\ApiClient;
 use App\Http\Clients\DBClient;
 use App\Services\TwitchTokenService;
 use App\Services\UsersFollowDataManager;
-use App\Serializers\UserDataSerializer;
-use Exception;
+use App\Serializers\UsersFollowSerializer;
 use Mockery;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpFoundation\Response;
 
 class UsersFollowDataManagerTest extends TestCase
 {
+    private $apiClientMock;
+    private $dbClientMock;
+    private $twitchTokenServiceMock;
+    private $serializerMock;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->apiClientMock = Mockery::mock(ApiClient::class);
+        $this->dbClientMock = Mockery::mock(DBClient::class);
+        $this->twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
+        $this->serializerMock = Mockery::mock(UsersFollowSerializer::class);
+        $this->userDataManager = new UsersFollowDataManager($this->apiClientMock, $this->twitchTokenServiceMock, $this->dbClientMock, $this->serializerMock);
+
+    }
+
     /**
      * @test
      */
     public function given_a_correct_token_and_correct_api_response_do_get_user_data()
     {
-        $apiClientMock = Mockery::mock(ApiClient::class);
-        $dbClientMock = Mockery::mock(DBClient::class);
-        $twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
-        $serializerMock = Mockery::mock(UserDataSerializer::class);
-
-        $twitchTokenServiceMock
+        $this->twitchTokenServiceMock
             ->shouldReceive('getToken')
             ->andReturn('access_token');
 
-        $dbClientMock
+        $this->dbClientMock
             ->shouldReceive('getUsersWithFollowedStreamers')
             ->once()
             ->andReturn([
@@ -42,17 +52,17 @@ class UsersFollowDataManagerTest extends TestCase
                 ]
             ]);
 
-        $apiClientMock
+        $this->apiClientMock
             ->shouldReceive('makeCurlCall')
             ->with("https://api.twitch.tv/helix/users?id=123", 'access_token')
             ->andReturn(['response' => json_encode(['data' => [['login' => 'streamer1']]]), 'status' => 200]);
 
-        $apiClientMock
+        $this->apiClientMock
             ->shouldReceive('makeCurlCall')
             ->with("https://api.twitch.tv/helix/users?id=456", 'access_token')
             ->andReturn(['response' => json_encode(['data' => [['login' => 'streamer2']]]), 'status' => 200]);
 
-        $serializerMock
+        $this->serializerMock
             ->shouldReceive('serialize')
             ->once()
             ->with([
@@ -64,9 +74,8 @@ class UsersFollowDataManagerTest extends TestCase
                 ['username' => 'user2', 'followedStreamers' => ['streamer2']]
             ]);
 
-        $userDataManager = new UsersFollowDataManager($apiClientMock, $twitchTokenServiceMock, $dbClientMock, $serializerMock);
 
-        $response = $userDataManager->getUserData();
+        $response = $this->userDataManager->getUserData();
 
         $this->assertIsArray($response);
         $this->assertCount(2, $response);

@@ -8,14 +8,20 @@ use Illuminate\Support\Facades\Validator;
 
 class GetUserRequestTest extends TestCase
 {
+    protected $request;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->request = new GetUsersRequest();
+    }
+
     /**
      * @test
      */
     public function given_a_request_return_true_authorization()
     {
-        $request = new GetUsersRequest();
-
-        $this->assertTrue($request->authorize());
+        $this->assertTrue($this->request->authorize());
     }
 
     /**
@@ -23,9 +29,7 @@ class GetUserRequestTest extends TestCase
      */
     public function given_an_empty_id_return_error()
     {
-        $request = new GetUsersRequest();
-
-        $validator = Validator::make(['id' => null], $request->rules());
+        $validator = Validator::make(['id' => null], $this->request->rules());
 
         $this->assertFalse($validator->passes());
         $this->assertTrue($validator->errors()->has('id'));
@@ -36,9 +40,7 @@ class GetUserRequestTest extends TestCase
      */
     public function given_an_id_with_invalid_format_return_error()
     {
-        $request = new GetUsersRequest();
-
-        $validator = Validator::make(['id' => 'abc'], $request->rules());
+        $validator = Validator::make(['id' => 'abc'], $this->request->rules());
 
         $this->assertFalse($validator->passes());
         $this->assertTrue($validator->errors()->has('id'));
@@ -49,9 +51,7 @@ class GetUserRequestTest extends TestCase
      */
     public function given_a_valid_id_return_value()
     {
-        $request = new GetUsersRequest();
-
-        $validator = Validator::make(['id' => 123], $request->rules());
+        $validator = Validator::make(['id' => 123], $this->request->rules());
 
         $this->assertTrue($validator->passes());
         $this->assertFalse($validator->errors()->has('id'));

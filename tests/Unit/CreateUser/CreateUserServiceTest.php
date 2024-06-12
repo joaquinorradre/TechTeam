@@ -10,26 +10,35 @@ use Exception;
 
 class CreateUserServiceTest extends TestCase
 {
+    private $dbClientMock;
+    private $createUserService;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->dbClientMock = Mockery::mock(DBClient::class);
+        $this->createUserService = new CreateUserService($this->dbClientMock);
+    }
+
     /**
      * @test
      * @throws Exception
      */
     public function when_username_is_unique_should_create_user_successfully()
     {
-        $dbClientMock = Mockery::mock(DBClient::class);
-        $dbClientMock
+        $this->dbClientMock
             ->shouldReceive('userExistsInDatabase')
             ->once()
             ->with('nuevo_usuario')
             ->andReturn(false);
-        $dbClientMock
+        $this->dbClientMock
             ->shouldReceive('createUser')
             ->once()
             ->with('nuevo_usuario', 'nueva_contraseña')
             ->andReturnNull(); // No devuelve nada explícitamente
-        $createUserService = new CreateUserService($dbClientMock);
 
-        $result = $createUserService->createUser('nuevo_usuario', 'nueva_contraseña');
+        $result = $this->createUserService->createUser('nuevo_usuario', 'nueva_contraseña');
 
         $this->assertTrue($result);
     }
@@ -39,19 +48,17 @@ class CreateUserServiceTest extends TestCase
      */
     public function when_username_exists_should_throw_conflict_exception()
     {
-        $dbClientMock = Mockery::mock(DBClient::class);
-        $dbClientMock
+        $this->dbClientMock
             ->shouldReceive('userExistsInDatabase')
             ->once()
             ->with('nuevo_usuario')
             ->andReturn(true);
-        $createUserService = new CreateUserService($dbClientMock);
 
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('El nombre de usuario ya existe');
         $this->expectExceptionCode(409);
 
-        $createUserService->createUser('nuevo_usuario', 'nueva_contraseña');
+        $this->createUserService->createUser('nuevo_usuario', 'nueva_contraseña');
     }
 
     /**
@@ -59,23 +66,27 @@ class CreateUserServiceTest extends TestCase
      */
     public function when_database_error_should_throw_internal_server_error_exception()
     {
-        $dbClientMock = Mockery::mock(DBClient::class);
-        $dbClientMock
+        $this->dbClientMock
             ->shouldReceive('userExistsInDatabase')
             ->once()
             ->with('nuevo_usuario')
             ->andReturn(false);
-        $dbClientMock
+        $this->dbClientMock
             ->shouldReceive('createUser')
             ->once()
             ->with('nuevo_usuario', 'nueva_contraseña')
             ->andThrow(new Exception('Error del servidor al crear el usuario', 500));
-        $createUserService = new CreateUserService($dbClientMock);
 
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Error del servidor al crear el usuario');
         $this->expectExceptionCode(500);
 
-        $createUserService->createUser('nuevo_usuario', 'nueva_contraseña');
+        $this->createUserService->createUser('nuevo_usuario', 'nueva_contraseña');
+    }
+
+    protected function tearDown(): void
+    {
+        Mockery::close();
+        parent::tearDown();
     }
 }

@@ -11,6 +11,7 @@ class CreateUserRequestTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->request = new CreateUserRequest();
     }
 
     /**
@@ -18,9 +19,7 @@ class CreateUserRequestTest extends TestCase
      */
     public function should_authorize_request()
     {
-        $request = new CreateUserRequest();
-
-        $this->assertTrue($request->authorize());
+        $this->assertTrue($this->request->authorize());
     }
 
     /**
@@ -28,9 +27,7 @@ class CreateUserRequestTest extends TestCase
      */
     public function should_return_correct_validation_rules()
     {
-        $request = new CreateUserRequest();
-
-        $rules = $request->rules();
+        $rules = $this->request->rules();
 
         $this->assertEquals([
             'username' => 'required|string|max:255',
@@ -43,9 +40,7 @@ class CreateUserRequestTest extends TestCase
      */
     public function should_return_correct_validation_messages()
     {
-        $request = new CreateUserRequest();
-
-        $messages = $request->messages();
+        $messages = $this->request->messages();
 
         $this->assertEquals([
             'username.required' => 'El nombre de usuario es obligatorio.',
@@ -67,9 +62,7 @@ class CreateUserRequestTest extends TestCase
             'password' => 'validpassword',
         ];
 
-        $request = new CreateUserRequest();
-
-        $validator = Validator::make($data, $request->rules());
+        $validator = Validator::make($data, $this->request->rules());
         $this->assertTrue($validator->passes());
     }
 
@@ -82,8 +75,7 @@ class CreateUserRequestTest extends TestCase
             'username' => '',
             'password' => '12',
         ];
-        $request = new CreateUserRequest();
-        $validator = Validator::make($data, $request->rules(), $request->messages());
+        $validator = Validator::make($data, $this->request->rules(), $this->request->messages());
 
         $this->assertFalse($validator->passes());
         $errors = $validator->errors();
