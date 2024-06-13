@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\GetUsersFollowRequest;
 use App\Services\UsersFollowDataManager;
 use App\Http\Clients\DBClient;
 use Exception;
@@ -20,7 +21,7 @@ class GetUsersFollowController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(): JsonResponse
+    public function __invoke(GetUsersFollowRequest $request): JsonResponse
     {
         try {
             $usersFollowedData = $this->userListDataManager->getUserData();

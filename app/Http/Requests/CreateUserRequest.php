@@ -11,6 +11,11 @@ class CreateUserRequest extends FormRequest
         return true;
     }
 
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
     public function rules(): array
     {
         return [
@@ -27,7 +32,7 @@ class CreateUserRequest extends FormRequest
             'username.max' => 'El nombre de usuario no puede tener más de 255 caracteres.',
             'password.required' => 'La contraseña es obligatoria.',
             'password.string' => 'La contraseña debe ser una cadena de caracteres.',
-            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.min' => 'La contraseña debe tener al menos 3 caracteres.',
         ];
     }
 }

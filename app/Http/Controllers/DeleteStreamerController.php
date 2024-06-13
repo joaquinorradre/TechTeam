@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Clients\DBClient;
+use App\Http\Requests\DeleteStreamerRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,7 +17,7 @@ class DeleteStreamerController extends Controller
         $this->dbClient = $dbClient;
     }
 
-    public function __invoke(Request $request): JsonResponse
+    public function __invoke(DeleteStreamerRequest $request): JsonResponse
     {
         $userId = $request->input('userId');
         $streamerId = $request->input('streamerId');
