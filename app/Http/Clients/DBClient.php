@@ -205,7 +205,8 @@ class DBClient
     {
         try {
             DB::table('User')->insert([
-                'username' => $username,
+                'name' => $username,
+                'email' => 'user'. $username . '@gmail.com',
                 'password' => $password,
             ]);
         } catch (Exception $exception) {

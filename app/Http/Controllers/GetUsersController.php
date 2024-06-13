@@ -7,8 +7,10 @@ use App\Http\Requests\GetUsersRequest;
 use App\Serializers\UserDataSerializer;
 use App\Serializers\UserListSerializer;
 use App\Services\GetUsersService;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class GetUsersController extends Controller
 {
@@ -28,9 +30,22 @@ class GetUsersController extends Controller
     {
         $userId = $request->input('id');
 
-        $userData = $this->getUsersService->execute($userId);
-        $serializedUserData = $this->userSerializer->serialize($userData);
+        try {
+            $userData = $this->getUsersService->execute($userId);
+            $serializedUserData = $this->userSerializer->serialize($userData);
 
-        return new JsonResponse($serializedUserData, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+            return new JsonResponse($serializedUserData, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        } catch (Exception $exception) {
+            if ($exception->getCode() === Response::HTTP_SERVICE_UNAVAILABLE) {
+                return new JsonResponse([
+                    'error' => 'Service Unavailable',
+                    'message' => 'No se pueden devolver usuarios en este momento, inténtalo más tarde'
+                ], Response::HTTP_SERVICE_UNAVAILABLE);
+            }
+            return new JsonResponse([
+                'error' => 'Internal Server Error',
+                'message' => 'Error del servidor al obtener los usuarios'
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }

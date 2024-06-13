@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CreateUserRequest;
 use App\Services\CreateUserService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Exception;
 
 class CreateUserController extends Controller
@@ -16,7 +16,7 @@ class CreateUserController extends Controller
         $this->createUserService = $createUserService;
     }
 
-    public function __invoke(CreateUserRequest $request): JsonResponse
+    public function __invoke(Request $request): JsonResponse
     {
         $username = $request->input('username');
         $password = $request->input('password');

@@ -35,13 +35,18 @@ class TimelineDataManager
 
             $timeline = $this->fetchStreamersTimeline($streamers, $token);
             if (empty($timeline)) {
-                throw new Exception("No se encontraron streams para los streamers seguidos por el usuario.", Response::HTTP_INTERNAL_SERVER_ERROR);
+                throw new Exception("No se encontraron streams para los streamers seguidos por el usuario.", Response::HTTP_NOT_FOUND);
             }
 
             return $timeline;
-        } catch (Exception $e) {
-            $statusCode = $e->getCode() === 0 ? Response::HTTP_INTERNAL_SERVER_ERROR : $e->getCode();
-            throw new Exception("Error al obtener el timeline: " . $e->getMessage(), $statusCode);
+        } catch (Exception $exception) {
+            $statusCode = $exception->getCode() === 0 ? Response::HTTP_INTERNAL_SERVER_ERROR : $exception->getCode();
+
+            if (in_array($statusCode, [Response::HTTP_INTERNAL_SERVER_ERROR, Response::HTTP_NOT_FOUND, Response::HTTP_SERVICE_UNAVAILABLE])) {
+                throw $exception;
+            }
+
+            throw new Exception("Error al obtener el timeline: " . $exception->getMessage(), $statusCode);
         }
     }
 
