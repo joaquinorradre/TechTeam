@@ -11,6 +11,9 @@ class GetUsersService
         $this->userDataManager = $userDataManager;
     }
 
+    /**
+     * @throws \Exception
+     */
     public function execute($userId)
     {
         $userData = $this->userDataManager->getUserData($userId);
@@ -22,5 +25,4 @@ class GetUsersService
 
         return($response['data']);
     }
-
 }

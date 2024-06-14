@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\GetTimelineRequest;
 use App\Http\Requests\GetUsersRequest;
 use App\Serializers\UserDataSerializer;
+use App\Serializers\UserListSerializer;
 use App\Services\GetUsersService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -12,7 +14,6 @@ class GetUsersController extends Controller
 {
     private UserDataSerializer $userSerializer;
     private GetUsersService $getUsersService;
-
 
     public function __construct(GetUsersService $getUsersService, UserDataSerializer $userSerializer)
     {

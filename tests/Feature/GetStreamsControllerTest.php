@@ -10,56 +10,40 @@ use App\Services\GetStreamsService;
 use App\Services\StreamsDataManager;
 use App\Services\TwitchTokenService;
 use Illuminate\Http\Request;
-use PHPUnit\Framework\TestCase;
 use Mockery;
+use PHPUnit\Framework\TestCase;
 
 class GetStreamsControllerTest extends TestCase
 {
     /**
      * @test
      */
-    public function getStreamsControllerIntegrationTest()
+    public function getStreams()
     {
-        $request = Request::create('/analytics/streams', 'GET', ['parametro' => 'valor']);
-
+        $request = Request::create('/analytics/streams', 'GET');
         $apiClientMock = Mockery::mock(ApiClient::class);
-        $streamsDataManagerMock = Mockery::mock(StreamsDataManager::class);
         $twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
         $dbClientMock = Mockery::mock(DbClient::class);
-        $getStreamsServiceMock = Mockery::mock(GetStreamsService::class);
         $streamsDataSerializerMock = Mockery::mock(StreamsDataSerializer::class);
-
-        $getStreamsServiceMock
-            ->shouldReceive('execute')
-            ->once()
-            ->andReturn(['data' => [['title' => 'Stream 1', 'user_name' => 'User 1']]]);
-
-        $streamsDataManagerMock
-            ->shouldReceive('getStreams')
-            ->once()
-            ->andReturn(json_encode(['data' => [['title' => 'Stream 1', 'user_name' => 'User 1']]]));
-
         $twitchTokenServiceMock
             ->shouldReceive('getToken')
             ->once()
             ->andReturn('token');
-
         $dbClientMock
             ->shouldReceive('getTokenFromDatabase')
             ->once()
             ->andReturn('token');
-
         $apiClientMock
             ->shouldReceive('makeCurlCall')
             ->andReturn(['response' => json_encode(['data' => [['title' => 'Stream 1', 'user_name' => 'User 1']]]), 'status' => 200]);
-
         $streamsDataSerializerMock
             ->shouldReceive('serialize')
             ->once()
-            ->with(['data' => [['title' => 'Stream 1', 'user_name' => 'User 1']]])
-            ->andReturn([['title' => 'Stream 1', 'user_name' => 'User 1',]]);
-
-        $getStreamsController = new GetStreamsController($getStreamsServiceMock,$streamsDataSerializerMock);
+            ->with([['title' => 'Stream 1', 'user_name' => 'User 1']])
+            ->andReturn([['title' => 'Stream 1', 'user_name' => 'User 1']]);
+        $streamsDataManager = new StreamsDataManager($apiClientMock,$twitchTokenServiceMock);
+        $getStreamsService = new GetStreamsService($streamsDataManager);
+        $getStreamsController = new GetStreamsController($getStreamsService, $streamsDataSerializerMock);
 
         $result = $getStreamsController->__invoke($request);
 

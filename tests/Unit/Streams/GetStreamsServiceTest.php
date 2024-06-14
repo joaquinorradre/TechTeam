@@ -11,17 +11,16 @@ class GetStreamsServiceTest extends TestCase
 {
     /**
      * @test
+     * @throws \Exception
      */
-    public function givenAValidResponseFromTwitchDoExecuteMethod()
+    public function given_valid_response_from_twitch_should_execute_method()
     {
         $streamsDataManagerMock = Mockery::mock(StreamsDataManager::class);
-
+        $getStreamsService = new GetStreamsService($streamsDataManagerMock);
         $streamsDataManagerMock
             ->shouldReceive('getStreams')
             ->once()
             ->andReturn(json_encode(['data' => [['title' => 'Stream 1', 'user_name' => 'User 1']]]));
-
-        $getStreamsService = new GetStreamsService($streamsDataManagerMock);
 
         $result = $getStreamsService->execute();
 
@@ -33,17 +32,16 @@ class GetStreamsServiceTest extends TestCase
 
     /**
      * @test
+     * @throws \Exception
      */
-    public function givenANullResponseFromTwitchDoExecuteMethod()
+    public function given_null_response_from_twitch_should_execute_method()
     {
         $streamsDataManagerMock = Mockery::mock(StreamsDataManager::class);
-
+        $getStreamsService = new GetStreamsService($streamsDataManagerMock);
         $streamsDataManagerMock
             ->shouldReceive('getStreams')
             ->once()
             ->andReturn('');
-
-        $getStreamsService = new GetStreamsService($streamsDataManagerMock);
 
         $result = $getStreamsService->execute();
 

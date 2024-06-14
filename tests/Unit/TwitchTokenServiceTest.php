@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Unit;
 
 use App\Http\Clients\ApiClient;
@@ -7,59 +8,59 @@ use App\Services\TwitchTokenService;
 use PHPUnit\Framework\TestCase;
 use Mockery;
 use Exception;
+
 class TwitchTokenServiceTest extends TestCase
 {
+    private $dbClientMock;
+    private $apiClientMock;
+    private $twitchTokenService;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->dbClientMock = Mockery::mock(DBClient::class);
+        $this->apiClientMock = Mockery::mock(ApiClient::class);
+
+        $this->twitchTokenService = new TwitchTokenService($this->dbClientMock, $this->apiClientMock);
+    }
+
     /**
      * @test
+     * @throws Exception
      */
-    public function givenADatabaseSuccesfulAccesReturnToken()
+    public function it_returns_token_when_database_access_is_successful()
     {
-        $dbClientMock = Mockery::mock(DBClient::class);
-        $apiClientMock = Mockery::mock(ApiClient::class);
-
-        $dbClientMock
+        $this->dbClientMock
             ->shouldReceive('getTokenFromDatabase')
             ->once()
             ->andReturn('mocked_token');
 
-        $twitchTokenService = new TwitchTokenService($dbClientMock, $apiClientMock);
-
-        $result = $twitchTokenService->getToken();
+        $result = $this->twitchTokenService->getToken();
 
         $this->assertEquals('mocked_token', $result);
     }
 
     /**
      * @test
+     * @throws Exception
      */
-    public function givenADatabaseFailureGetTokenFromApiAndSaveToDatabase()
+    public function it_fetches_token_from_api_and_saves_to_database_when_database_access_fails()
     {
-        $dbClientMock = Mockery::mock(DBClient::class);
-        $apiClientMock = Mockery::mock(ApiClient::class);
-
-        $dbClientMock
+        $this->dbClientMock
             ->shouldReceive('getTokenFromDatabase')
             ->once()
             ->andReturn(null);
-
-        $dbClientMock
+        $this->dbClientMock
             ->shouldReceive('addTokenToDatabase')
             ->once()
             ->with('api_token');
-
-        $apiClientMock
+        $this->apiClientMock
             ->shouldReceive('getTokenFromAPI')
             ->once()
             ->andReturn('{"access_token": "api_token"}');
 
-        $twitchTokenService = new TwitchTokenService($dbClientMock, $apiClientMock);
-
-        try {
-            $result = $twitchTokenService->getToken();
-        }
-        catch (\Exception $e) {
-            $this->fail('Se esperaba que no se lanzara una excepción.');
-        }
+        $result = $this->twitchTokenService->getToken();
 
         $this->assertEquals('api_token', $result);
     }
@@ -67,32 +68,26 @@ class TwitchTokenServiceTest extends TestCase
     /**
      * @test
      */
-    public function givenAnApiTokenErrorReturnException()
+    public function it_throws_exception_when_api_token_retrieval_fails()
     {
-        $dbClientMock = Mockery::mock(DBClient::class);
-        $apiClientMock = Mockery::mock(ApiClient::class);
-
-        $dbClientMock
+        $this->dbClientMock
             ->shouldReceive('getTokenFromDatabase')
             ->once()
             ->andReturn(null);
-
-        $apiClientMock
+        $this->apiClientMock
             ->shouldReceive('getTokenFromAPI')
             ->once()
             ->andThrow(new Exception('API error'));
 
-        $twitchTokenService = new TwitchTokenService($dbClientMock, $apiClientMock);
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Token de autenticación no proporcionado o inválido');
 
-        try {
-            $result = $twitchTokenService->getToken();
-        }
-        catch (\Exception $e) {
-            $this->assertInstanceOf(\Exception::class, $e);
-            $this->assertEquals('No se puede establecer conexión con Twitch en este momento', $e->getMessage());
-            return;
-        }
+        $this->twitchTokenService->getToken();
+    }
 
-        $this->fail('Se esperaba que se lanzara una excepción.');
+    protected function tearDown(): void
+    {
+        Mockery::close();
+        parent::tearDown();
     }
 }
