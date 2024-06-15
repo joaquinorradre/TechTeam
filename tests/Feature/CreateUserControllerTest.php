@@ -2,134 +2,115 @@
 
 namespace Feature;
 
-use App\Http\Controllers\CreateUserController;
-use App\Http\Requests\CreateUserRequest;
 use App\Services\CreateUserService;
-use Illuminate\Http\JsonResponse;
-use Mockery;
-use Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
+use PHPUnit\Framework\TestCase;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class CreateUserControllerTest extends TestCase
 {
+    use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+
+    }
     /**
      * @test
      */
-    public function createUser()
+    public function createsUser()
     {
-        $data = [
+
+        $response = $this->postJson('/analytics/users', [
             'username' => 'nuevo_usuario',
             'password' => 'nueva_contraseña'
-        ];
+        ]);
 
-        $request = CreateUserRequest::create('/analytics/users', 'POST', $data);
-
-        $createUserServiceMock = Mockery::mock(CreateUserService::class);
-
-        $createUserServiceMock
-            ->shouldReceive('createUser')
-            ->once()
-            ->with('nuevo_usuario', 'nueva_contraseña')
-            ->andReturn(true);
-
-        $createUserController = new CreateUserController($createUserServiceMock);
-
-        $result = $createUserController->__invoke($request);
-
-        $this->assertInstanceOf(JsonResponse::class, $result);
-        $this->assertEquals(201, $result->getStatusCode());
-        $this->assertJsonStringEqualsJsonString(json_encode([
+        $response->assertStatus(201)
+            ->assertJson([
+                'username' => 'nuevo_usuario',
+                'message' => 'Usuario creado correctamente'
+            ]);
+        $this->assertDatabaseHas('users', [
             'username' => 'nuevo_usuario',
-            'message' => 'Usuario creado correctamente'
-        ]), $result->getContent());
+        ]);
     }
 
     /**
      * @test
      */
-    public function createUserWithConflict()
+    public function doesNotCreateAUserIfAlreadyExists()
     {
-        $data = [
-            'username' => 'nuevo_usuario',
-            'password' => 'nueva_contraseña'
-        ];
+        $username = 'nuevo_usuario';
+        $password = 'nueva_contraseña';
 
-        $request = CreateUserRequest::create('/analytics/users', 'POST', $data);
+        User::create([
+            'name' => $username,
+            'password' => Hash::make($password),
+        ]);
 
-        $createUserServiceMock = Mockery::mock(CreateUserService::class);
+        $response = $this->postJson('/analytics/users', [
+            'username' => $username,
+            'password' => $password
+        ]);
 
-        $createUserServiceMock
-            ->shouldReceive('createUser')
-            ->once()
-            ->with('nuevo_usuario', 'nueva_contraseña')
-            ->andThrow(new \Exception('El nombre de usuario ya existe', 409));
-
-        $createUserController = new CreateUserController($createUserServiceMock);
-
-        $result = $createUserController->__invoke($request);
-
-        $this->assertInstanceOf(JsonResponse::class, $result);
-        $this->assertEquals(409, $result->getStatusCode());
-        $this->assertJsonStringEqualsJsonString(json_encode([
-            'error' => 'Conflict',
-            'message' => 'El nombre de usuario ya existe'
-        ]), $result->getContent());
+        $response->assertStatus(409)
+            ->assertJson([
+                'error' => 'Conflict',
+                'message' => ' El nombre de usuario ya está en uso.'
+            ]);
     }
 
     /**
      * @test
      */
-    public function createUserWithServerError()
+    public function doesNotCreateUserIfServerError()
     {
-        $data = [
-            'username' => 'nuevo_usuario',
-            'password' => 'nueva_contraseña'
-        ];
+        $this->app->bind(CreateUserService::class, function ($app) {
+            return new class {
+                public function createUser($username, $password)
+                {
+                    throw new \Exception('Error del servidor al crear el usuario.', 500);
+                }
+            };
+        });
 
-        $request = CreateUserRequest::create('/analytics/users', 'POST', $data);
+        $username = 'nuevo_usuario';
+        $password = 'nueva_contraseña';
 
-        $createUserServiceMock = Mockery::mock(CreateUserService::class);
+        $response = $this->postJson('/analytics/users', [
+            'username' => $username,
+            'password' => $password
+        ]);
 
-        $createUserServiceMock
-            ->shouldReceive('createUser')
-            ->once()
-            ->with('nuevo_usuario', 'nueva_contraseña')
-            ->andThrow(new \Exception('Error del servidor al crear el usuario', 500));
-
-        $createUserController = new CreateUserController($createUserServiceMock);
-
-        $result = $createUserController->__invoke($request);
-
-        $this->assertInstanceOf(JsonResponse::class, $result);
-        $this->assertEquals(500, $result->getStatusCode());
-        $this->assertJsonStringEqualsJsonString(json_encode([
-            'error' => 'Internal Server Error',
-            'message' => 'Error del servidor al crear el usuario'
-        ]), $result->getContent());
+        $response->assertStatus(500)
+            ->assertJson([
+                'error' => 'Internal Server Error',
+                'message' => 'Error del servidor al crear el usuario.'
+            ]);
     }
 
     /**
      * @test
      */
-    public function createUserWithMissingParameters()
+    public function doesNotCreateUserIfMissingParameters()
     {
-        $request = CreateUserRequest::create('/analytics/users', 'POST');
+        $response = $this->postJson('/analytics/users', []);
 
-        $createUserServiceMock = Mockery::mock(CreateUserService::class);
-        $createUserController = new CreateUserController($createUserServiceMock);
-
-        $result = $createUserController->__invoke($request);
-
-        $this->assertInstanceOf(JsonResponse::class, $result);
-        $this->assertEquals(400, $result->getStatusCode());
-        $this->assertJsonStringEqualsJsonString(json_encode([
-            'error' => 'Bad Request',
-            'message' => 'Parámetros inválidos'
-        ]), $result->getContent());
+        // Verifica que la respuesta sea la esperada
+        $response->assertStatus(400)
+            ->assertJson([
+                'error' => 'Bad Request',
+                'message' => 'Los parámetros requeridos ( username y password ) no fueron proporcionados.'
+            ]);
     }
 
     protected function tearDown(): void
     {
-        Mockery::close();
         parent::tearDown();
     }
 }
