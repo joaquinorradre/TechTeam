@@ -2,51 +2,67 @@
 
 namespace Tests\Feature;
 
-use App\Http\Clients\ApiClient;
-use App\Http\Clients\DBClient;
-use App\Http\Controllers\GetStreamsController;
-use App\Serializers\StreamsDataSerializer;
-use App\Services\GetStreamsService;
-use App\Services\StreamsDataManager;
-use App\Services\TwitchTokenService;
 use Illuminate\Http\Request;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class GetUsersFollowControllerTest extends TestCase
 {
+    use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Crear usuarios y sus streamers seguidos en la base de datos
+        DB::table('User')->insert([
+            ['username' => 'usuario1', 'password' => 'hashed_password1'],
+            ['username' => 'usuario2', 'password' => 'hashed_password2'],
+        ]);
+
+        DB::table('user_follow')->insert([
+            ['username' => 'usuario1', 'streamerId' => 'streamer1'],
+            ['username' => 'usuario1', 'streamerId' => 'streamer2'],
+            ['username' => 'usuario2', 'streamerId' => 'streamer2'],
+            ['username' => 'usuario2', 'streamerId' => 'streamer3'],
+        ]);
+
+    }
     /**
      * @test
      */
-    public function getStreams()
+    public function getsUsersAndFollowedStreamers()
     {
-        $request = Request::create('/analytics/streams', 'GET', ['parametro' => 'valor']);
-        $apiClientMock = Mockery::mock(ApiClient::class);
-        $twitchTokenServiceMock = Mockery::mock(TwitchTokenService::class);
-        $dbClientMock = Mockery::mock(DbClient::class);
-        $streamsDataSerializerMock = Mockery::mock(StreamsDataSerializer::class);
-        $twitchTokenServiceMock
-            ->shouldReceive('getToken')
-            ->once()
-            ->andReturn('token');
-        $dbClientMock
-            ->shouldReceive('getTokenFromDatabase')
-            ->once()
-            ->andReturn('token');
-        $apiClientMock
-            ->shouldReceive('makeCurlCall')
-            ->andReturn(['response' => json_encode(['data' => [['title' => 'Stream 1', 'user_name' => 'User 1']]]), 'status' => 200]);
-        $streamsDataSerializerMock
-            ->shouldReceive('serialize')
-            ->once()
-            ->with([['title' => 'Stream 1', 'user_name' => 'User 1']])
-            ->andReturn([['title' => 'Stream 1', 'user_name' => 'User 1',]]);
-        $streamsDataManager = new StreamsDataManager($apiClientMock,$twitchTokenServiceMock);
-        $getStreamsService = new GetStreamsService($streamsDataManager);
-        $getStreamsController = new GetStreamsController($getStreamsService,$streamsDataSerializerMock);
+        $response = $this->get('/analytics/users');
 
-        $result = $getStreamsController->__invoke($request);
+        $response->assertStatus(200);
 
-        $this->assertNotEmpty($result);
+        $responseData = $response->json();
+
+        $this->assertIsArray($responseData);
+        foreach ($responseData as $user) {
+            $this->assertArrayHasKey('username', $user);
+            $this->assertArrayHasKey('followedStreamers', $user);
+            $this->assertIsArray($user['followedStreamers']);
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function doesNotGetUsersAndFollowedStreamersIfServerError()
+    {
+        $response = $this->get('/analytics/users', ['forceError' => true]);
+
+        $response->assertStatus(500);
+
+        $response->assertJson([
+            'error' => 'Error del servidor al obtener la lista de usuarios.'
+        ]);
+    }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
     }
 }

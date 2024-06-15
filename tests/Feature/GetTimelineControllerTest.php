@@ -2,96 +2,74 @@
 
 namespace Tests\Feature;
 
-use App\Http\Controllers\GetTimelineController;
-use App\Http\Requests\GetTimelineRequest;
-use App\Services\GetTimelineService;
+use App\Http\Clients\DBClient;
+use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Hash;
 use Mockery;
 use Symfony\Component\HttpFoundation\Response;
-use Tests\TestCase;
+use PHPUnit\Framework\TestCase;
 
 class GetTimelineControllerTest extends TestCase
 {
+    use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $dbClient = new DBClient();
+        $dbClient->createUser('user123', Hash::make('password123'));
+        $dbClient->addStreamerToDatabase('user123', 'streamer123');
+    }
     /**
      * @test
      */
-    public function getTimelineSuccess()
+    public function getsTimeline()
     {
-        $timelineData = [
-            [
-                'streamerId' => '123',
-                'userName' => 'StreamerOne',
-                'title' => 'Stream Title 1',
-                'gameName' => 'Game One',
-                'viewerCount' => 100,
-                'startedAt' => '2023-06-01T12:00:00Z'
-            ],
-            [
-                'streamerId' => '124',
-                'userName' => 'StreamerTwo',
-                'title' => 'Stream Title 2',
-                'gameName' => 'Game Two',
-                'viewerCount' => 200,
-                'startedAt' => '2023-06-01T13:00:00Z'
+        $response = $this->get('/analytics/timeline', ['userId' => 'user123']);
+
+        $response->assertStatus(200);
+
+        $response->assertJsonStructure([
+            '*' => [
+                'streamerId',
+                'userName',
+                'title',
+                'gameName',
+                'viewerCount',
+                'startedAt'
             ]
-        ];
-        $timelineServiceMock = Mockery::mock(GetTimelineService::class);
-        $timelineServiceMock
-            ->shouldReceive('execute')
-            ->once()
-            ->with('user123')
-            ->andReturn($timelineData);
-        $controller = new GetTimelineController($timelineServiceMock);
-        $request = new GetTimelineRequest(['userId' => 'user123']);
-
-        $response = $controller->__invoke($request);
-
-        $this->assertInstanceOf(JsonResponse::class, $response);
-        $this->assertSame(Response::HTTP_OK, $response->status());
-        $this->assertSame($timelineData, $response->getData(true));
+        ]);
     }
 
     /**
      * @test
      */
-    public function getTimelineNotFound()
+    public function doesNotGetTimelineIfUserDoesNotExist()
     {
-        $timelineServiceMock = Mockery::mock(GetTimelineService::class);
-        $timelineServiceMock
-            ->shouldReceive('execute')
-            ->once()
-            ->with('user123')
-            ->andThrow(new \Exception("El usuario especificado user123 no sigue a ningún streamer", Response::HTTP_INTERNAL_SERVER_ERROR));
-        $controller = new GetTimelineController($timelineServiceMock);
-        $request = new GetTimelineRequest(['userId' => 'user123']);
+        $response = $this->get('/analytics/timeline', ['userId' => 'user456']);
 
-        $response = $controller->__invoke($request);
+        $response->assertStatus(Response::HTTP_NOT_FOUND);
 
-        $this->assertInstanceOf(JsonResponse::class, $response);
-        $this->assertSame(Response::HTTP_INTERNAL_SERVER_ERROR, $response->status());
-        $this->assertSame(['error' => "El usuario especificado user123 no sigue a ningún streamer"], $response->getData(true));
+        $response->assertJson([
+            'error' => 'El usuario especificado user456 no existe.'
+        ]);
     }
 
     /**
      * @test
-     * @throws \Exception
+     * @throws Exception
      */
-    public function getTimelineError()
+    public function doesNotGetTimelineIfServerError()
     {
-        $timelineServiceMock = Mockery::mock(GetTimelineService::class);
-        $timelineServiceMock
-            ->shouldReceive('execute')
-            ->once()
-            ->with('user123')
-            ->andThrow(new \Exception("Error inesperado", Response::HTTP_INTERNAL_SERVER_ERROR));
-        $controller = new GetTimelineController($timelineServiceMock);
-        $request = new GetTimelineRequest(['userId' => 'user123']);
+        $response = $this->get('/analytics/timeline', ['userId' => 'user123', 'forceError' => true]);
 
-        $response = $controller->__invoke($request);
+        $response->assertStatus(Response::HTTP_INTERNAL_SERVER_ERROR);
 
-        $this->assertInstanceOf(JsonResponse::class, $response);
-        $this->assertSame(Response::HTTP_INTERNAL_SERVER_ERROR, $response->status());
-        $this->assertSame(['error' => 'Error inesperado'], $response->getData(true));
+        $response->assertJson([
+            'error' => 'Error del servidor al obtener el timeline.'
+        ]);
     }
 
     protected function tearDown(): void

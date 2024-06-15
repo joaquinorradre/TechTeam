@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PostStreamerRequest;
 use App\Services\PostStreamerService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,7 +16,7 @@ class PostStreamerController extends Controller
         $this->postStreamerService = $postStreamerService;
     }
 
-    public function __invoke(Request $request): JsonResponse
+    public function __invoke(PostStreamerRequest $request): JsonResponse
     {
         $userId = $request->input('userId');
         $streamerId = $request->input('streamerId');

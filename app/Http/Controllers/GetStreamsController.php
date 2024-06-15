@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\GetStreamsRequest;
 use App\Serializers\StreamsDataSerializer;
 use App\Services\GetStreamsService;
 use Illuminate\Http\Request;
@@ -21,7 +22,7 @@ class GetStreamsController extends Controller
      * Handle the incoming request
      * @throws \Exception
      */
-    public function __invoke(Request $request): JsonResponse
+    public function __invoke(GetStreamsRequest $request): JsonResponse
     {
         $streams = $this->getStreamsService->execute();
         $serializedStreams = $this->streamsSerializer->serialize($streams);
